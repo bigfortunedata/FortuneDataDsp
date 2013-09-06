@@ -1,0 +1,17 @@
+./protected/extensions/phpmailer/class.pop3.php:      print_r($single_error);
+./protected/extensions/yiiwheels/widgets/ace/assets/js/mode-php.js:        'preg_grep|preg_last_error|preg_match|preg_match_all|preg_quote|preg_replace|preg_replace_callback|preg_split|prev|print|print_r|' +
+./protected/modules/user/components/Relation.php:			print_r($_POST);
+./protected/modules/user/vendors/hybridauth/Hybrid/Logger.php:				"DEBUG -- " . $_SERVER['REMOTE_ADDR'] . " -- " . $datetime . " -- " . $message . " -- " . print_r($object, true) . "\n", 
+./protected/modules/user/vendors/hybridauth/Hybrid/Logger.php:				"ERROR -- " . $_SERVER['REMOTE_ADDR'] . " -- " . $datetime . " -- " . $message . " -- " . print_r($object, true) . "\n", 
+./protected/modules/user/vendors/hybridauth/Hybrid/Providers/Disqus.php:		print_r($data);
+./protected/modules/user/vendors/hybridauth/Hybrid/Providers/Plurk.php:		print_r($response);
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/Facebook/base_facebook.php:        'makeSignedRequest expects an array. Got: ' . print_r($data, true));
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/LastFM/LastFM.php:        //print_r($result);
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/LastFM/LastFM.php:        //print_r($result); print_r($result['session']['key']); exit;
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/LinkedIn/LinkedIn.php:                           throw new LinkedInException('LinkedIn->invite(): could not send invitation, LinkedIn says: ' . print_r($response['linkedin'], TRUE));
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/Sina/saetv2.ex.class.php:			print_r( curl_getinfo($ci) );
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/Sina/saetv2.ex.class.php:			print_r( $response );
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/Sina/Sina.php:		//print_r($token);
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/Sina/Sina.php:        //print_r( $header_array ); 
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/Sina/Sina.php:        //print_r( curl_getinfo($ci) ); 
+./protected/modules/user/vendors/hybridauth/Hybrid/thirdparty/Sina/Sina.php:        //print_r( $response ); 
