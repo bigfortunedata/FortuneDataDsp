@@ -108,36 +108,18 @@ class CreativeController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-		if(isset($_POST['Creative']))
-		{
-			$uploadedFile=CUploadedFile::getInstance($model,'image');
-			$model->attributes=$_POST['Creative'];
-			if(!empty($uploadedFile)) {
-				$rnd = rand(0,9999);  // generate random number between 0-9999
-				$fileName = "{$rnd}-{$uploadedFile}";  // random number + file name
-				$model->image = $fileName;
-			}
-			else {
-				$_POST['Creative']['image'] = $model->image;
-			}
-			
-			if($model->save())
-			{
-				if(!empty($uploadedFile))  // check if uploaded file is set or not
-				{
-				    $uploadedFile->saveAs(Yii::app()->basePath.'/../upload/'.$model->image);
-				}
-				$this->redirect(array('view','id'=>$model->id, 'cid'=>$this->_campaign->id));
-			}
+		
+		if ($model->status_id == 1) {
+			$model->status_id = 2;
 		}
-
-		$this->render('update',array(
-			'model'=>$model,
-			'cid'=>$this->_campaign->id,
-		));
+		else if ($model->status_id == 2) {
+			$model->status_id = 1;
+		}
+		
+		if($model->save())
+		{
+			$this->redirect(array('/campaign/view', 'id'=>$this->_campaign->id));
+		}
 	}
 
 	/**
@@ -147,12 +129,15 @@ class CreativeController extends Controller
 	 */
 	public function actionDelete($id)
 	{	
+		echo "AAA";
+		$this->render('create',array(
+			'model'=>$model,
+			'cid'=>$this->_campaign->id,
+		));
+		return;
 		$this->_campaign->removeCreative($id);
 		$this->loadModel($id)->delete();
-		
-		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('/creative', 'cid'=>$this->_campaign->id));
+		$this->redirect(array('/campaign/view', 'id'=>$this->_campaign->id));
 	}
 
 	/**

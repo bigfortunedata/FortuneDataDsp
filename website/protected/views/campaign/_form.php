@@ -85,7 +85,10 @@
 		<?php echo $form->textField($model,'click_url',array('size'=>45,'maxlength'=>45)); ?>
 		<?php echo $form->error($model,'click_url'); ?>
 	</div>
-
+	
+<?php
+if ($model->isNewRecord) {
+?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'creative_image'); ?>
 		<?php echo CHtml::activeFileField($model, 'creative_image'); ?>
@@ -99,19 +102,9 @@
 		 ?>
 	</div>
 	<br>
-	<div class="row" id="advance_button">
-		<?php $this->widget('zii.widgets.jui.CJuiButton',array(
-		    'buttonType'=>'button',
-		    'name'=>'advanced',
-		    'caption'=>'Advanced Settings',
-		    'onclick'=>new CJavaScriptExpression('function(){document.getElementById(\'advance\').style.display = \'block\';
-			document.getElementById(\'advance_button\').style.display = \'none\';}'),
-		));
-		?>
-	</div><br>
-	
-	<div id="advance" style="display:none">
-	
+<?php
+}
+?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'budget_ede'); ?>
 		<?php echo $form->dropDownList($model,'budget_ede', $model->getYesNoOptions()); ?>
@@ -119,7 +112,7 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'fc_impressions'); ?>
+		<?php echo $form->labelEx($model,'fc_impressions') . '0 means no frequency capping.<br>'; ?>
 		<?php echo $form->textField($model,'fc_impressions'); ?>
 		<?php echo $form->error($model,'fc_impressions'); ?>
 	</div>
@@ -140,7 +133,6 @@
 		
 		<?php $this->endWidget() ?>
 		<?php echo $form->error($model,'location'); ?>
-	</div>
 	</div>
 
 	<div class="row buttons">

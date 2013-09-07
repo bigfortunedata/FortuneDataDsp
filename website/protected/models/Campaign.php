@@ -128,7 +128,6 @@ class Campaign extends FortuneDataActiveRecord
 				'condition'=>'user_id=:userId',
 				'params'=>array(':userId'=>Yii::app()->user->id),
 			)),
-			array('click_url', 'url', 'allowEmpty'=>false, 'defaultScheme' => 'http'),
 			array(
 			  'budget_amount',
 			  'compare',
@@ -146,18 +145,13 @@ class Campaign extends FortuneDataActiveRecord
 			  'message'=>'{attribute} must be greater than {compareAttribute}.'
 			),
 			array('id, name, user_id, status_id, default_bid, review_status_id, click_url, budget_amount, budget_type_id, budget_ede, fc_impressions, fc_period_in_hours, fc_type_id, start_datetime, end_datetime, conversion_audience, click_audience, create_time, create_user_id, update_time, update_user_id', 'safe', 'on'=>'search'),
-            array('creative_image', 'file','on'=>'insert',
-                'types'=> 'jpg,png',
-                'maxSize' => 1024 * 1024 * 10, // 10MB                
-                'tooLarge' => 'The file was larger than 10MB. Please upload a smaller file.',                
+            array('creative_image', 'FDImageSizeValidator'             
             ),
-            array('creative_image', 'file','on'=>'update',
-                'allowEmpty' => true,
+			array('creative_image', 'file',
                 'types'=> 'jpg,png',
-                'maxSize' => 1024 * 1024 * 10, // 10MB                
-                'tooLarge' => 'The file was larger than 10MB. Please upload a smaller file.',                
+                'maxSize' => 120 * 1024, // 120KB
+                'tooLarge' => 'The file was larger than 120KB. Please upload a smaller file.',
             ),
-
 		);
 	}
 

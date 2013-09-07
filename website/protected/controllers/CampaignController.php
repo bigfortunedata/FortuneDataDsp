@@ -48,9 +48,32 @@ class CampaignController extends Controller
 	 */
 	public function actionView($id)
 	{
+		$model=$this->loadModel($id);
+		if(isset($_POST['Campaign']))
+		{
+			$model->attributes=$_POST['Campaign'];
+			$uploadedFile=CUploadedFile::getInstance($model,'creative_image');
+			
+			$rnd = rand(0,9999);  // generate random number between 0-9999
+			$fileName = "{$model->id}-{$rnd}";  // random number + file name
+			
+			if ($uploadedFile && $uploadedFile !== "") {
+				$model->creative_image = $fileName;
+				
+				$creative = new Creative;
+				$creative->image = $fileName;
+				if($model->save()) {
+					if($creative->save()) {
+						$uploadedFile->saveAs(Yii::app()->basePath.'/../upload/'.$fileName);
+						$model->addCreative($creative->id);	
+					}
+				}
+			}
+		}
+		
 		$this->cid = $id;
 		$this->render('view',array(
-			'model'=>$this->loadModel($id),
+			'model'=>$model,
 		));
 	}
 
@@ -69,21 +92,22 @@ class CampaignController extends Controller
 		if(isset($_POST['Campaign']))
 		{
 			$model->attributes=$_POST['Campaign'];
-			$creative->attributes=$_POST['Campaign'];
-			
-			$rnd = rand(0,9999);  // generate random number between 0-9999
-			$uploadedFile=CUploadedFile::getInstance($model,'creative_image');
-			$fileName = "{$rnd}-{$uploadedFile}";  // random number + file name
-			if ($uploadedFile && $uploadedFile !== "") {
-				$model->creative_image = $fileName;
-				$creative->image = $fileName;
-			}
 			if($model->save()) {
-				if($creative->save()) {
-					$model->saveRegions($_POST['Campaign']);
-					$uploadedFile->saveAs(Yii::app()->basePath.'/../upload/'.$fileName);
-					$model->addCreative($creative->id);					
-					$this->redirect(array('index'));
+				$creative->attributes=$_POST['Campaign'];
+				$rnd = rand(0,9999);  // generate random number between 0-9999
+				$uploadedFile=CUploadedFile::getInstance($model,'creative_image');
+				$fileName = "{$model->id}-{$rnd}";  // random number + file name
+				if ($uploadedFile && $uploadedFile !== "") {
+					$model->creative_image = $fileName;
+					$creative->image = $fileName;
+				}
+				if($model->save()) {
+					if($creative->save()) {
+						$model->saveRegions($_POST['Campaign']);
+						$uploadedFile->saveAs(Yii::app()->basePath.'/../upload/'.$fileName);
+						$model->addCreative($creative->id);					
+						$this->redirect(array('index'));
+					}
 				}
 			}
 		}
@@ -101,36 +125,16 @@ class CampaignController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
-		$creative = $model->creatives[0];
 		
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Campaign']))
 		{
-			$uploadedFile=CUploadedFile::getInstance($model,'creative_image');
 			$model->attributes=$_POST['Campaign'];
-			$creative->attributes=$_POST['Campaign'];
-			if(!empty($uploadedFile)) {
-				$rnd = rand(0,9999);  // generate random number between 0-9999
-				$fileName = "{$rnd}-{$uploadedFile}";  // random number + file name
-				$model->creative_image = $fileName;
-				$creative->image = $fileName;
-			}
-			else {
-				$_POST['Campaign']['creative_image'] = $model->creative_image;
-			}
 			
 			if($model->save()) {
 				$model->saveRegions($_POST['Campaign']);
-				
-				if($creative->save())
-				{
-					if(!empty($uploadedFile))  // check if uploaded file is set or not
-					{
-					    $uploadedFile->saveAs(Yii::app()->basePath.'/../upload/'.$creative->image);
-					}
-				}
 				$this->redirect(array('index'));
 			}
 		}

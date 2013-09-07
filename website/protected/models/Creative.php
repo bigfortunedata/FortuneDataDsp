@@ -53,7 +53,7 @@ class Creative extends FortuneDataActiveRecord
 		
 		if ($this->isNewRecord) {
 			// The status id is set to the default
-			$this->status_id = 1;
+			$this->status_id = 2;
 
 			// The review status id is set to the default
 			$this->review_status_id = 5;

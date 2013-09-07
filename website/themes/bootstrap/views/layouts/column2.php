@@ -23,9 +23,6 @@
                // array('label'=>'<i class="icon icon-inbox"></i>  Inbox', 'url'=>array('/message/message/index' )),
                 array('label'=>'<i class="icon icon-remove"></i>  Logout', 'url'=>array('/user/user/logout' )),
 			);
-			if ($this->id === 'campaign' && $this->cid != null) {
-				array_splice($menuItems, 3, 0, array(array('label'=>'<i class="icon icon-plus"></i>  Add Creative', 'url'=>array('creative/create', 'cid'=>$this->cid))));
-			}
 		    $this->widget('zii.widgets.CMenu', array(
 			/*'type'=>'list',*/
 			'encodeLabel'=>false,

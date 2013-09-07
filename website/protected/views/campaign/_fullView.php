@@ -37,8 +37,4 @@
 	<?php echo CHtml::encode($data->end_datetime); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('location')); ?>:</b>
-	<?php echo CHtml::encode($data->location); ?>
-	<br />
-
 </div>

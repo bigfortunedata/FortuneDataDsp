@@ -21,12 +21,34 @@ $this->menu=array(
 
 <div id="creatives">
 <?php if($model->creativeCount > 0): ?>
-  <h3>
-    <?php echo $model->creativeCount>1?$model->creativeCount . ' creatives' : 'One creative'; ?>
-  </h3>
+  <br>
+  <h4>
+    <?php echo 'Creatives'; ?>
+  </h4>
   <?php $this->renderPartial('_creatives', array(
   	'creatives'=>$model->creatives,
   	'cid'=>$model->id,
   ));?>
 <?php endif;?>
 </div>
+
+<div class="form">
+
+<?php $form=$this->beginWidget('CActiveForm', array(
+	'id'=>'campaign-form',
+	'enableAjaxValidation'=>false,
+	'htmlOptions'=>array('enctype'=>'multipart/form-data'),
+)); ?>
+
+	<div class="row">
+		<?php echo '<h5>Add a creative:</h5>'; ?>
+		<?php echo CHtml::activeFileField($model, 'creative_image'); ?>
+		<?php echo $form->error($model,'creative_image'); ?>
+	</div>
+	
+	<div class="row buttons">
+		<?php echo CHtml::submitButton('Add'); ?>
+	</div>
+<?php $this->endWidget(); ?>
+
+</div><!-- form -->

@@ -2,18 +2,19 @@
 $dataProvider=new CArrayDataProvider($creatives);
 
 $gridColumns = array(
-	array('name'=>'label','header'=>'Name'),
-	array('name'=>'reviewStatus.description','header'=>'Review Status'),
 	array(
 		'class'=>'bootstrap.widgets.TbImageColumn',
 	    'imagePathExpression'=>'$data->getImageUrl()',
-	    'usePlaceKitten'=>FALSE
+	    'usePlaceKitten'=>FALSE,
+		'header'=>'Image',
 	),
+	array('name'=>'reviewStatus.description','header'=>'Review Status'),
+	array('name'=>'status.description','header'=>'Online Status'),
 	array(
         'header' => 'Operations',
         'htmlOptions' => array('nowrap'=>'nowrap'),
         'class'=>'bootstrap.widgets.TbButtonColumn',
-        'viewButtonUrl'=>'array("/creative/view", "id"=>$data->id, "cid"=>'.$cid.')',
+		'template'=>'{update} {delete}',
         'updateButtonUrl'=>'array("/creative/update", "id"=>$data->id, "cid"=>'.$cid.')',
         'deleteButtonUrl'=>'array("/creative/delete", "id"=>$data->id, "cid"=>'.$cid.')',
     )
