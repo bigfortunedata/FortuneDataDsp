@@ -129,12 +129,6 @@ class CreativeController extends Controller
 	 */
 	public function actionDelete($id)
 	{	
-		echo "AAA";
-		$this->render('create',array(
-			'model'=>$model,
-			'cid'=>$this->_campaign->id,
-		));
-		return;
 		$this->_campaign->removeCreative($id);
 		$this->loadModel($id)->delete();
 		$this->redirect(array('/campaign/view', 'id'=>$this->_campaign->id));
