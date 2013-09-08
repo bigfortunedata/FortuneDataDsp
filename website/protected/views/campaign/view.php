@@ -26,7 +26,7 @@ $this->menu=array(
   </h4>
   <?php $this->renderPartial('_creatives', array(
   	'cid'=>$model->id,
-	'creativesProvider'=>$creativesProvider,
+	'creatives'=>$model->creatives,
   ));?>
 </div>
 

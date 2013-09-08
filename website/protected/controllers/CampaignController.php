@@ -33,7 +33,7 @@ class CampaignController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'index', 'create', 'update', 'view', and 'delete' actions
-				'actions'=>array('index', 'create','update','view','delete','admin'),
+				'actions'=>array('index', 'create','update','view','delete','admin','toggle'),
 				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
@@ -68,20 +68,9 @@ class CampaignController extends Controller
 		}
 		
 		$this->cid = $id;
-		$creativeIds = array();
-		foreach($model->creatives as $creative) {
-			$creativeIds[] = $creative->id;
-		}
-		$criteria = new CDbCriteria;
-		$criteria->addInCondition('id', $creativeIds);
-		$creativesProvider=new CActiveDataProvider('Creative', array(
-			'criteria' => $criteria,
-		));
-		
 		$this->render('view',array(
 			'model'=>$model,
 			'creative'=>$newCreative,
-			'creativesProvider'=>$creativesProvider,
 		));
 	}
 
@@ -125,6 +114,29 @@ class CampaignController extends Controller
 		));
 	}
 
+	/**
+	 * Toggle some properties such as status.
+	 */
+	public function actionToggle($id)
+	{
+		$model=$this->loadModel($id);
+		if(isset($_GET['attribute']))
+		{
+			$attribute = $_GET['attribute'];
+			if ($attribute === 'isOnline') {
+				if ($model->status_id == 1) {
+					$model->status_id = 2;
+				}
+				else if ($model->status_id == 2) {
+					$model->status_id = 1;
+				}
+				
+				if($model->save()) {
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
@@ -208,6 +220,7 @@ class CampaignController extends Controller
 	public function loadModel($id)
 	{
 		$model=Campaign::model()->findByPk($id);
+		if ($model->user_id !== Yii::app()->user->id) $model = null;
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

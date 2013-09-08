@@ -91,6 +91,12 @@ class TbToggleColumn extends TbDataColumn
 	public $sortable = true;
 
 	/**
+	 * @var string additional parameter to be added to the url
+	 * Added by shihaow
+	 */
+	public $additionalParam = "";
+
+	/**
 	 * @var mixed the HTML code representing a filter input (eg a text field, a dropdown list)
 	 * that is used for this data column. This property is effective only when
 	 * {@link CGridView::filter} is set.
@@ -172,7 +178,7 @@ class TbToggleColumn extends TbDataColumn
 		}
 
 		$this->button = array(
-			'url' => 'Yii::app()->controller->createUrl("' . $this->toggleAction . '",array("id"=>$data->primaryKey,"attribute"=>"' . $this->name . '"))',
+			'url' => 'Yii::app()->controller->createUrl("' . $this->toggleAction . '",array("id"=>$data->primaryKey,"attribute"=>"' . $this->name . '",'. $this->additionalParam .'))',
 			'htmlOptions' => array('class' => $this->name . '_toggle' . $this->uniqueClassSuffix),
 		);
 

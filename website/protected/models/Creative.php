@@ -100,7 +100,7 @@ class Creative extends FortuneDataActiveRecord
             ),
 			array('image', 'file', 'on'=>'insert',
                 'types'=> 'jpg,png',
-                'allowEmpty'=>false,
+                'allowEmpty'=>true,
                 'maxSize' => 120 * 1024, // 120KB
                 'tooLarge' => 'The file was larger than 120KB. Please upload a smaller file.',
             ),
@@ -188,6 +188,15 @@ class Creative extends FortuneDataActiveRecord
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
+	}
+	
+	/**
+	 * Whether the creative is online
+	 */
+	public function getIsOnline()
+	{
+		if ($this->status_id == 2) return "online";
+		else return false;
 	}
 	
 	/**

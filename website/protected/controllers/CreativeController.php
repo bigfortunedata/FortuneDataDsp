@@ -34,7 +34,7 @@ class CreativeController extends Controller
 	{
 		return array(
 			'accessControl', // perform access control for CRUD operations
-			'campaignContext + create view index update delete admin',
+			'campaignContext + create view index update delete admin toggle',
 			'postOnly + delete', // we only allow deletion via POST request
 		);
 	}
@@ -48,7 +48,7 @@ class CreativeController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'index', 'create', 'update', 'view', and 'delete' actions
-				'actions'=>array('index', 'create','update','view','delete','admin','upload'),
+				'actions'=>array('index', 'create','update','view','delete','admin','upload','toggle'),
 				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
@@ -160,6 +160,30 @@ class CreativeController extends Controller
 		));
 	}
 
+	/**
+	 * Toggle some properties such as status.
+	 */
+	public function actionToggle($id)
+	{
+		$model=$this->loadModel($id);
+		if(isset($_GET['attribute']))
+		{
+			$attribute = $_GET['attribute'];
+			if ($attribute === 'isOnline') {
+				if ($model->status_id == 1) {
+					$model->status_id = 2;
+				}
+				else if ($model->status_id == 2) {
+					$model->status_id = 1;
+				}
+				
+				if($model->save()) {
+					$this->redirect(array('/campaign/view', 'id'=>$this->_campaign->id));
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.

@@ -390,6 +390,15 @@ class Campaign extends FortuneDataActiveRecord
 	}
 	
 	/**
+	 * Whether the campaign is online
+	 */
+	public function getIsOnline()
+	{
+		if ($this->status_id == 2) return "online";
+		else return false;
+	}
+	
+	/**
 	 * Retrieves the root region.
 	 * @return the root region
 	 */

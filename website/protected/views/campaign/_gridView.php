@@ -1,7 +1,15 @@
 <?php
 $gridColumns = array(
 	array('name'=>'name','header'=>'Name'),
-	array('name'=>'status.description','header'=>'Status'),
+	array(
+		'class'=>'bootstrap.widgets.TbToggleColumn',
+    	'toggleAction'=>'campaign/toggle',
+    	'name' => 'isOnline',
+    	'header' => 'Status',
+		'displayText' => 'Change status',
+		'checkedButtonLabel' => 'Online',
+		'uncheckedButtonLabel' => 'Offline',
+	),
 	'default_bid',
 	array('name'=>'reviewStatus.description','header'=>'Review Status'),
 	'click_url',
