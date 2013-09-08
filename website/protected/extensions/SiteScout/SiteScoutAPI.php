@@ -925,7 +925,7 @@ class SiteScoutAPI {
 
         //get the campaign informaton from database
         $creative_asset = Creative::model()->findByPk($id);
-        $campaign_id = $creative->campaigns[0]->id;
+        $campaign_id = $creative_asset->campaigns[0]->id;
 
         $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign_id . '/creatives';
 
