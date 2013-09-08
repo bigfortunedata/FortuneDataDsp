@@ -50,24 +50,22 @@ class SiteScoutController extends Controller {
 
         $this->SD = new SiteScoutAPI();
         $this->SD->createCampaign($id);
-        $this->SD->uploadCreativeAsset($id);
-        $this->SD->addCreativeToCampaign($id);
-        //  $this->SD->addGeoRule($id);
+        $this->SD->uploadAllCreative($id);
+        $this->SD->addAllCreative($id);
+        //  $this->SD->addAllGeoRule($id);
          $this->SD->setPagePosition($id);
          $this->SD->addSiteRule($id);
     }
 
     /**
-     * Create a new campaign in SiteScout.
-     * If create is successful, the browser will be redirected to the 'capaign manage' page.
-     * @param integer $id the ID of the model to be create
+     *Update a campaign in SiteScout.
+     *  
+     * @param campaign ID
      */
     public function actionUpdateCampaign($id) {
 
         $this->SD = new SiteScoutAPI();
         $this->SD->updateCampaign($id);
-        // $this->SD->uploadCreativeAsset($id);
-        // $this->SD->addCreativeToCampaign($id);
         //  $this->SD->addGeoRule($id);
      }
 
@@ -91,6 +89,17 @@ class SiteScoutController extends Controller {
         $this->SD->removeCreative($id);
     }
 
+    /**
+     * upload a Creative record to SiteScout.
+     * and add it to the Campaign
+     *     * @param integer $Creative ID
+     */
+    public function actionUploadAddCreative($id) {
+
+        $this->SD = new SiteScoutAPI();
+        $this->SD->uploadOneCreative($id);
+        $this->SD->addOneCreative($id);
+    }
     /**
      *   Test API calls,examples.Uncomment one every time ,and test.
      */

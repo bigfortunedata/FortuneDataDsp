@@ -322,7 +322,7 @@ class SiteScoutAPI {
         $campaign_array =
                 array(
                     "name" => $campaign->name . '-' . $campaign->id . '-' . time(),
-                    "status" => 'offline',
+                    "status" => self::STATUS_ONLINE,
                     "defaultBid" => $campaign->default_bid,
                     "clickUrl" => $campaign->click_url,
                     "budget" => array(
@@ -370,13 +370,14 @@ class SiteScoutAPI {
     }
 
     /**
-     *   addCreativeToCampaign
+     *   uploadAllCreative
      *
-     * Upload a Creative Asset
+     * Upload Campaign Creative Asset
      * Path: /advertisers/{advertiserId}/creatives/assets
      * HTTP Method: POST
+     * parameter: Campaign ID
      */
-    public function uploadCreativeAsset($id) {
+    public function uploadAllCreative($id) {
         $path = self::SITESCOUT_BASE_URL . 'creatives/assets';
         $auth = $this->access_token['token_type'] . ' ' . $this->access_token['access_token'];
 
@@ -414,7 +415,7 @@ class SiteScoutAPI {
 
             if (!isset($response_obj->assetUrl)) {
                 throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'uploadCreativeAsset: Failed to upload creative to sitescout server,campaign id:' . $id . '  creative name:' . $creative_name));
+                Yii::t('SiteScoutAPI', 'uploadAllCreative: Failed to upload creative to sitescout server,campaign id:' . $id . '  creative name:' . $creative_name));
             }
 
             //update asset_url in sitesouct into fd_creative table
@@ -423,19 +424,20 @@ class SiteScoutAPI {
                     $creative_assets->id, array('asset_url' => $response_obj->assetUrl));
             if ($count != 1) {
                 throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'uploadCreativeAsset: Failed to update creative asset_url filed, campaign id:' . $id . '  creative name:' . $creative_name));
+                Yii::t('SiteScoutAPI', 'uploadAllCreative: Failed to update creative asset_url filed, campaign id:' . $id . '  creative name:' . $creative_name));
             }
         }
     }
 
     /**
-     *   addCreative
+     *   addAllCreative
      *
-     * Add a Creative to a Campaign
+     * Add all Creative to a Campaign
      * Path: /advertisers/{advertiserId}/campaigns/{campaignId}/creatives
      * HTTP Method: POST
+     * parameter: Campaign ID
      */
-    public function addCreativeToCampaign($id) {
+    public function addAllCreative($id) {
 
         $headerParameters = array(
             'Content-Type' => 'application/json',
@@ -453,7 +455,7 @@ class SiteScoutAPI {
             $creative_array =
                     array(
                         "label" => $creative_assets->label . '-' . time() . '-' . rand(1, 1000) . '---API TESTING',
-                        "status" => 'offline',
+                        "status" => self::STATUS_ONLINE,
                         "width" => $creative_assets->width,
                         "height" => $creative_assets->height,
                         "type" => 'banner',
@@ -470,7 +472,7 @@ class SiteScoutAPI {
 
             if (isset($response->errorCode)) {
                 throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'SiteScout addCreativeToCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
+                Yii::t('SiteScoutAPI', 'SiteScout addAllCreative API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
             }
 
             //update return value in sitesouct into fd_creative table
@@ -484,19 +486,20 @@ class SiteScoutAPI {
 
             if ($count != 1) {
                 throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'addCreativeToCampaign: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
+                Yii::t('SiteScoutAPI', 'addAllCreative: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
             }
         }
     }
 
     /**
-     *   addGeoRule
+     *   addCampaignAllGeoRule
      *
-     * Add a Geo Rule
+     * Add all Geo Rule to a campaign
      * Path: /advertisers/{advertiserId}/campaigns/{campaignId}/targeting/geo
      * HTTP Method: POST
+     * parameter: Campaign ID
      */
-    public function addGeoRule($id) {
+    public function addAllGeoRule($id) {
 
         $headerParameters = array(
             'Content-Type' => 'application/json',
@@ -514,7 +517,7 @@ class SiteScoutAPI {
             $creative_array =
                     array(
                         "label" => $creative_assets->label . '-' . time() . '-' . rand(1, 1000) . '---API TESTING',
-                        "status" => 'offline',
+                        "status" => self::STATUS_ONLINE,
                         "width" => $creative_assets->width,
                         "height" => $creative_assets->height,
                         "type" => 'banner',
@@ -544,6 +547,7 @@ class SiteScoutAPI {
      * Set Page Position Targeting
      * Path: /advertisers/{advertiserId}/campaigns/{campaignId}/targeting/pagePositions
      * HTTP Method: POST
+     * set all page to above_the_fold
      */
     public function setPagePosition($id) {
 
@@ -580,6 +584,7 @@ class SiteScoutAPI {
      * Add a Site Rule
      * Path: /advertisers/{advertiserId}/campaigns/{campaignId}/sources/siteRules
      * HTTP Method: POST
+     * parameter: Campaign ID
      */
     public function addSiteRule($id) {
 
@@ -645,6 +650,7 @@ class SiteScoutAPI {
      * Update a Campaign (Partial representation allowed)
      * Path: /advertisers/{advertiserId}/campaigns/{campaignId}
      * HTTP Method: PATCH
+     * parameter: Campaign ID
      */
     public function updateCampaign($id) {
         $path = self::SITESCOUT_BASE_URL . 'campaigns';
@@ -666,7 +672,7 @@ class SiteScoutAPI {
                 array(
                     "campaignId" => $campaign->sitescout_campaign_id,
                     "name" => $campaign->name,
-                    "status" => 'offline',
+                    "status" => self::STATUS_ONLINE,
                     "defaultBid" => $campaign->default_bid,
                     "clickUrl" => $campaign->click_url,
                     "budget" => array(
@@ -719,6 +725,7 @@ class SiteScoutAPI {
      * HTTP Method: DELETE
      *  This function should be called before deleting record from fd_campaign_creative
      *  and DO NOT delete the physical record from database
+     * parameter: Creative ID
      */
     public function removeCreative($id) {
 
@@ -729,13 +736,13 @@ class SiteScoutAPI {
         //get the campaign informaton from database
         $creative = Creative::model()->findByPk($id);
         $campaignId = $creative->campaigns[0]->sitescout_campaign_id;
-          
-         if (!isset($campaignId)) {
+
+        if (!isset($campaignId)) {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'removeCreative: Failed to get the creative and campaign record from database, creative ID:' . $id));
         }
-      
- 
+
+
         //remove the create from sitescout and local database, if it is uploaded
         if (isset($creative->sitescout_creative_id)) {
             $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaignId . '/creatives/' . $creative->sitescout_creative_id;
@@ -743,7 +750,7 @@ class SiteScoutAPI {
             //Remove a Creative from a Campaign
             $response = $this->SiteScoutApiCall($path, EHttpClient::DELETE, null, null, $headerParameters);
 
-             if (isset($response->errorCode)) {
+            if (isset($response->errorCode)) {
                 throw new EHttpClientException(
                 Yii::t('SiteScoutAPI', 'SiteScout removeCreative, Remove a Creative from a Campaign : error- ' . $response->errorCode . '  -  ' . $response->message . '   Creative Id:' . $id));
             }
@@ -757,7 +764,7 @@ class SiteScoutAPI {
             if ($count != 1) {
                 throw new EHttpClientException(
                 Yii::t('SiteScoutAPI', 'removeCreative: Failed to remove creative from sitescout, campaign id:' . $id));
-            } 
+            }
         } else { //creative has NOT been approved, remove from local 
             //update archived status values into fd_creative table
             //$count = 1
@@ -769,7 +776,7 @@ class SiteScoutAPI {
                 throw new EHttpClientException(
                 Yii::t('SiteScoutAPI', 'removeCampaign: Failed to remove creative local database, campaign id:' . $id));
             }
-        }  
+        }
     }
 
     /**
@@ -778,6 +785,7 @@ class SiteScoutAPI {
      * Remove a Campaign  
      * Path: /advertisers/{advertiserId}/campaigns/{campaignId}
      * HTTP Method: PUT
+     * parameter: Campaign ID
      */
     public function removeCampaign($id) {
         $path = self::SITESCOUT_BASE_URL . 'campaigns';
@@ -841,6 +849,122 @@ class SiteScoutAPI {
                 throw new EHttpClientException(
                 Yii::t('SiteScoutAPI', 'removeCampaign: Failed to remove campaign local database, campaign id:' . $id));
             }
+        }
+    }
+
+    /**
+     *   uploadOneCreative
+     * Upload A new Creative Asset
+     * Path: /advertisers/{advertiserId}/creatives/assets
+     * HTTP Method: POST
+     * parameter: Creative ID
+     */
+    public function uploadOneCreative($id) {
+        $path = self::SITESCOUT_BASE_URL . 'creatives/assets';
+        $auth = $this->access_token['token_type'] . ' ' . $this->access_token['access_token'];
+
+        //get the campaign and createive informaton from database
+        $creative_asset = Creative::model()->findByPk($id);
+
+
+        $creative_name = Yii::app()->basePath . '/../upload/' . $creative_asset->image;
+        $content_type = CFileHelper::getMimeType($creative_name);
+        $data = file_get_contents($creative_name);
+
+        $headerParameters = array(
+            "Authorization: $auth",
+            "Content-Type: $content_type",
+            "Accept: application/json");
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headerParameters);
+        curl_setopt($ch, CURLOPT_URL, $path);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, TRUE);
+
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        $response_obj = json_decode($response);
+
+        if (!isset($response_obj->assetUrl)) {
+            throw new EHttpClientException(
+            Yii::t('SiteScoutAPI', 'uploadOneCreative: Failed to upload creative to sitescout server,creative id:' . $id . '  creative name:' . $creative_name));
+        }
+
+        //update asset_url in sitesouct into fd_creative table
+        //$count = 1
+        $count = $creative_asset->updateByPk(
+                $creative_asset->id, array('asset_url' => $response_obj->assetUrl));
+        if ($count != 1) {
+            throw new EHttpClientException(
+            Yii::t('SiteScoutAPI', 'uploadOneCreative: Failed to update creative asset_url filed, creative id:' . $id . '  creative name:' . $creative_name));
+        }
+    }
+
+    /**
+     *   addCreative
+     *
+     * Add ONE Creative to a Campaign
+     * Path: /advertisers/{advertiserId}/campaigns/{campaignId}/creatives
+     * HTTP Method: POST
+     * parameter: Creative ID
+     */
+    public function addOneCreative($id) {
+
+        $headerParameters = array(
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
+
+        //get the campaign informaton from database
+        $creative_asset = Creative::model()->findByPk($id);
+        $campaign_id = $creative->campaigns[0]->id;
+
+        $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign_id . '/creatives';
+
+        //build the creative body array
+        $creative_array =
+                array(
+                    "label" => $creative_asset->label . '-' . time() . '-' . rand(1, 1000) . '---API TESTING',
+                    "status" => self::STATUS_ONLINE,
+                    "width" => $creative_asset->width,
+                    "height" => $creative_asset->height,
+                    "type" => 'banner',
+                    "assetUrl" => $creative_asset->asset_url,
+        );
+
+
+        //convert campaign array to json format
+        $creative_json = json_encode($creative_array);
+
+        //call sitescout API
+        //return value : creative OBJECT
+        $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $creative_json);
+
+        if (isset($response->errorCode)) {
+            throw new EHttpClientException(
+            Yii::t('SiteScoutAPI', 'SiteScout addOneCreative API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
+        }
+
+        //update return value in sitesouct into fd_creative table
+        //$count = 1
+        $count = $creative_assets->updateByPk(
+                $creative_assets->id, array('sitescout_creative_id' => $response->creativeId,
+            'width' => $response->width,
+            'height' => $response->height,
+            'status_id' => Utility::GetStatusId($response->status),
+            'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+
+        if ($count != 1) {
+            throw new EHttpClientException(
+            Yii::t('SiteScoutAPI', 'addOneCreative: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
         }
     }
 
