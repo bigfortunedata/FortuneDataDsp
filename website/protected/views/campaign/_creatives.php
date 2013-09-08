@@ -1,6 +1,4 @@
 <?php
-$dataProvider=new CArrayDataProvider($creatives);
-
 $gridColumns = array(
 	array(
 		'class'=>'bootstrap.widgets.TbImageColumn',
@@ -22,7 +20,7 @@ $gridColumns = array(
 
 $this->widget('bootstrap.widgets.TbExtendedGridView', array(
     'type'=>'striped bordered',
-    'dataProvider' => $dataProvider,
+    'dataProvider' => $creativesProvider,
     'template' => "{items}",
     'columns' => $gridColumns,
 ));

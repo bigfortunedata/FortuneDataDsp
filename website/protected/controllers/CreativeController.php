@@ -131,7 +131,6 @@ class CreativeController extends Controller
 	{	
 		$this->_campaign->removeCreative($id);
 		$this->loadModel($id)->delete();
-		$this->redirect(array('/campaign/view', 'id'=>$this->_campaign->id));
 	}
 
 	/**
@@ -139,11 +138,6 @@ class CreativeController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$creativeIds = array();
-		foreach($this->_campaign->creatives as $creative) {
-			$creativeIds[] = $creative->id;
-		}
-		
 		$dataProvider=new CArrayDataProvider($this->_campaign->creatives);
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,

@@ -49,31 +49,39 @@ class CampaignController extends Controller
 	public function actionView($id)
 	{
 		$model=$this->loadModel($id);
-		if(isset($_POST['Campaign']))
+		$newCreative = new Creative;
+		if(isset($_POST['Creative']))
 		{
-			$model->attributes=$_POST['Campaign'];
-			$uploadedFile=CUploadedFile::getInstance($model,'creative_image');
-			
+			$uploadedFile=CUploadedFile::getInstance($newCreative,'image');
+			$newCreative->attributes=$_POST['Creative'];
 			$rnd = rand(0,9999);  // generate random number between 0-9999
 			$fileName = "{$model->id}-{$rnd}";  // random number + file name
 			
 			if ($uploadedFile && $uploadedFile !== "") {
 				$model->creative_image = $fileName;
-				
-				$creative = new Creative;
-				$creative->image = $fileName;
-				if($model->save()) {
-					if($creative->save()) {
-						$uploadedFile->saveAs(Yii::app()->basePath.'/../upload/'.$fileName);
-						$model->addCreative($creative->id);	
-					}
+				$newCreative->image = $fileName;
+				if($newCreative->save() && $model->save()) {
+					$uploadedFile->saveAs(Yii::app()->basePath.'/../upload/'.$fileName);
+					$model->addCreative($newCreative->id);	
 				}
 			}
 		}
 		
 		$this->cid = $id;
+		$creativeIds = array();
+		foreach($model->creatives as $creative) {
+			$creativeIds[] = $creative->id;
+		}
+		$criteria = new CDbCriteria;
+		$criteria->addInCondition('id', $creativeIds);
+		$creativesProvider=new CActiveDataProvider('Creative', array(
+			'criteria' => $criteria,
+		));
+		
 		$this->render('view',array(
 			'model'=>$model,
+			'creative'=>$newCreative,
+			'creativesProvider'=>$creativesProvider,
 		));
 	}
 
@@ -132,7 +140,6 @@ class CampaignController extends Controller
 		if(isset($_POST['Campaign']))
 		{
 			$model->attributes=$_POST['Campaign'];
-			
 			if($model->save()) {
 				$model->saveRegions($_POST['Campaign']);
 				$this->redirect(array('index'));

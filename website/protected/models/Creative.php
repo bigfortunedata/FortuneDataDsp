@@ -96,16 +96,13 @@ class Creative extends FortuneDataActiveRecord
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, user_id, label, review_status_id, width, height, type_id, vault_path, asset_url, code, vendor_id, expanding_direction_id, preview_url, create_time, create_user_id, update_time, update_user_id, status_id', 'safe', 'on'=>'search'),
-            array('image', 'file','on'=>'create',
-                'types'=> 'jpg,png',
-                'maxSize' => 1024 * 1024 * 10, // 10MB
-                'tooLarge' => 'The file was larger than 10MB. Please upload a smaller file.',                
+            array('image', 'FDImageSizeValidator'
             ),
-            array('image', 'file','on'=>'update',
-                'allowEmpty' => true,
+			array('image', 'file', 'on'=>'insert',
                 'types'=> 'jpg,png',
-                'maxSize' => 1024 * 1024 * 10, // 10MB
-                'tooLarge' => 'The file was larger than 10MB. Please upload a smaller file.',                
+                'allowEmpty'=>false,
+                'maxSize' => 120 * 1024, // 120KB
+                'tooLarge' => 'The file was larger than 120KB. Please upload a smaller file.',
             ),
         );
 	}

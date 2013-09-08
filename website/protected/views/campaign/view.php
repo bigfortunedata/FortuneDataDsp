@@ -20,30 +20,28 @@ $this->menu=array(
 <?php echo $this->renderPartial('_fullView', array('data'=>$model)); ?>
 
 <div id="creatives">
-<?php if($model->creativeCount > 0): ?>
   <br>
   <h4>
     <?php echo 'Creatives'; ?>
   </h4>
   <?php $this->renderPartial('_creatives', array(
-  	'creatives'=>$model->creatives,
   	'cid'=>$model->id,
+	'creativesProvider'=>$creativesProvider,
   ));?>
-<?php endif;?>
 </div>
 
 <div class="form">
 
 <?php $form=$this->beginWidget('CActiveForm', array(
-	'id'=>'campaign-form',
+	'id'=>'creative-form',
 	'enableAjaxValidation'=>false,
 	'htmlOptions'=>array('enctype'=>'multipart/form-data'),
 )); ?>
 
 	<div class="row">
 		<?php echo '<h5>Add a creative:</h5>'; ?>
-		<?php echo CHtml::activeFileField($model, 'creative_image'); ?>
-		<?php echo $form->error($model,'creative_image'); ?>
+		<?php echo CHtml::activeFileField($creative, 'image'); ?>
+		<?php echo $form->error($creative,'image'); ?>
 	</div>
 	
 	<div class="row buttons">
