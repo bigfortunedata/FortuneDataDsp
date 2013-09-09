@@ -23,7 +23,8 @@ $this->pageTitle=Yii::app()->name;
 ));?>
 </br> 
 <p style=" font-size:20px;" align="center">
-     <i> In North America and Europe,the Chinese travelers and local community consumer spending is continuing to grow </i>  </p>
+     <i> Chinese travelers spent a record US$102 billion on international tourism in 2012, a 40 percent rise from US$73 billion in 2011. </i>  </p>
+  <p style=" font-size:20px;" align="center">   <i> Overseas Chinese consumers market continues to grow rapidly and accounts for an increasing share of global sales for certain sectors. </i>  </p>
 <?php $this->beginWidget('bootstrap.widgets.TbHeroUnit',array(
     'heading'=>'',
 )); ?>
@@ -31,10 +32,10 @@ $this->pageTitle=Yii::app()->name;
 <tr>
 <td width=" 50%">
 <p style=" font-size:20px;"> <i> <b>The Problem</b></i></p>
-<p>Businesses have largely missed the opportunity to engage with this emerging consumer group because there are very few ways business can reach and market to Chinese consumers meaningful and cost-effectively.</p>
+<p>North American and Europe businesses have largely missed the opportunity to engage with this emerging consumer group because the available media buying tools lack the capabilities of running campaigns targeting the group meaningfully and cost-effectively.</p>
 <td width=" 50%">
 <p style=" font-size:20px;"> <i> <b>Our Solution</b></i></p>
-<p>Fortune Data programmatic marketing platform provides businesses one-stop solution to engage Chinese consumers in real time and deliver your relevant marketing campaign content across all vast networks. </p>
+<p>Fortune Data programmatic advertising platform provides businesses one-stop solution to engage Chinese consumers in real time and deliver your relevant marketing campaign content across all vast networks. </p>
 
 </td>
 </tr>
