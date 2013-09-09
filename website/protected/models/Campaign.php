@@ -144,6 +144,7 @@ class Campaign extends FortuneDataActiveRecord
 			  'allowEmpty'=>false , 
 			  'message'=>'{attribute} must be greater than {compareAttribute}.'
 			),
+			array('click_url', 'url', 'allowEmpty'=>false, 'defaultScheme' => 'http'),
 			array('id, name, user_id, status_id, default_bid, review_status_id, click_url, budget_amount, budget_type_id, budget_ede, fc_impressions, fc_period_in_hours, fc_type_id, start_datetime, end_datetime, conversion_audience, click_audience, create_time, create_user_id, update_time, update_user_id', 'safe', 'on'=>'search'),
             array('creative_image', 'FDImageSizeValidator'             
             ),
