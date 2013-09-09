@@ -925,10 +925,10 @@ class SiteScoutAPI {
 
         //get the campaign informaton from database
         $creative_asset = Creative::model()->findByPk($id);
-        $campaign_id = $creative_asset->campaigns[0]->id;
+        $campaign_id = $creative_asset->campaigns[0]->sitescout_campaign_id;
 
         $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign_id . '/creatives';
-
+  
         //build the creative body array
         $creative_array =
                 array(
@@ -943,7 +943,7 @@ class SiteScoutAPI {
 
         //convert campaign array to json format
         $creative_json = json_encode($creative_array);
-
+ 
         //call sitescout API
         //return value : creative OBJECT
         $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $creative_json);
@@ -955,13 +955,13 @@ class SiteScoutAPI {
 
         //update return value in sitesouct into fd_creative table
         //$count = 1
-        $count = $creative_assets->updateByPk(
-                $creative_assets->id, array('sitescout_creative_id' => $response->creativeId,
+        $count = $creative_asset->updateByPk(
+                $creative_asset->id, array('sitescout_creative_id' => $response->creativeId,
             'width' => $response->width,
             'height' => $response->height,
             'status_id' => Utility::GetStatusId($response->status),
             'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
-
+ 
         if ($count != 1) {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'addOneCreative: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
