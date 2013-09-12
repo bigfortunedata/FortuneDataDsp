@@ -71,6 +71,23 @@ class Utility {
 
         return $status->id;
     }
+    
+       /**
+     * Get Status code
+     * get status code from fd_campaign_status
+     */
+    public static function GetStatusCode($id) {
+
+
+        $status = CampaignStatus::model()->findByAttributes(array('id' => $id));
+
+        if (!isset($status)) {
+            throw new CException(
+            Yii::t('Utility', 'GetStatusId: Failed to get status code, status id:' . $id));
+        }
+
+        return $status->code;
+    }
 
     /**
      * Get ReviewStatus ID
