@@ -318,28 +318,50 @@ class SiteScoutAPI {
             Yii::t('SiteScoutAPI', 'createCampaign: Failed to get teh campaing record from database, campaign ID:' . $id));
         }
 
-        //build the campaign body array
-        $campaign_array =
-                array(
-                    "name" => $campaign->name . '-' . $campaign->id . '-' . time(),
-                    "status" => self::STATUS_ONLINE,
-                    "defaultBid" => $campaign->default_bid,
-                    "clickUrl" => $campaign->click_url,
-                    "budget" => array(
-                        "amount" => $campaign->budget_amount,
-                        "type" => 'daily',
-                        "evenDeliveryEnabled" => 'true'
-                    ),
-                    "frequencyCapping" => array(
-                        "impressions" => $campaign->fc_impressions,
-                        "periodInHours" => $campaign->fc_period_in_hours,
-                        "type" => 'campaign'
-                    ),
-                    "flightDates" => array(
-                        "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
-                        "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
-                    )
-        );
+        //
+        if ($campaign->fc_impressions == 0) {
+            //build the campaign body array
+            $campaign_array =
+                    array(
+                        "name" => $campaign->name . '-' . $campaign->id . '-' . time(),
+                        "status" => $campaign->status->code,
+                        "defaultBid" => $campaign->default_bid,
+                        "clickUrl" => $campaign->click_url,
+                        "budget" => array(
+                            "amount" => $campaign->budget_amount,
+                            "type" => 'daily',
+                            "evenDeliveryEnabled" => 'true'
+                        ),
+                        "flightDates" => array(
+                            "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                            "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
+                        )
+            );
+        } else {
+            //build the campaign body array
+            $campaign_array =
+                    array(
+                        "name" => $campaign->name . '-' . $campaign->id . '-' . time(),
+                        "status" => $campaign->status->code,
+                        "defaultBid" => $campaign->default_bid,
+                        "clickUrl" => $campaign->click_url,
+                        "budget" => array(
+                            "amount" => $campaign->budget_amount,
+                            "type" => 'daily',
+                            "evenDeliveryEnabled" => 'true'
+                        ),
+                        "frequencyCapping" => array(
+                            "impressions" => $campaign->fc_impressions,
+                            "periodInHours" => $campaign->fc_period_in_hours,
+                            "type" => 'campaign'
+                        ),
+                        "flightDates" => array(
+                            "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                            "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
+                        )
+            );
+        }
+
 
 
         //convert campaign array to json format
@@ -645,15 +667,16 @@ class SiteScoutAPI {
     }
 
     /**
-     *   updateCampaign
-     *
-     * Update a Campaign (Partial representation allowed)
+     * updateCampaign
+     * the function only be called in campaign basic update
+     * Update a Campaign  
      * Path: /advertisers/{advertiserId}/campaigns/{campaignId}
-     * HTTP Method: PATCH
+     * HTTP Method: PUT
      * parameter: Campaign ID
      */
     public function updateCampaign($id) {
         $path = self::SITESCOUT_BASE_URL . 'campaigns';
+        $response = new stdClass;
         $headerParameters = array(
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
@@ -666,55 +689,134 @@ class SiteScoutAPI {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'updateCampaign: Failed to get the campaing record from database, campaign ID:' . $id));
         }
-        $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id;
-        //build the campaign body array
-        $campaign_array =
-                array(
-                    "campaignId" => $campaign->sitescout_campaign_id,
-                    "name" => $campaign->name,
-                    "status" => self::STATUS_ONLINE,
-                    "defaultBid" => $campaign->default_bid,
-                    "clickUrl" => $campaign->click_url,
-                    "budget" => array(
-                        "amount" => $campaign->budget_amount,
-                        "type" => 'daily',
-                        "evenDeliveryEnabled" => 'true'
-                    ),
-                    "frequencyCapping" => array(
-                        "impressions" => $campaign->fc_impressions,
-                        "periodInHours" => $campaign->fc_period_in_hours,
-                        "type" => 'campaign'
-                    ),
-                    "flightDates" => array(
-                        "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
-                        "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
-                    )
-        );
+        //only udate campaign has been uploaded
+        if (isset($campaign->sitescout_campaign_id)) {
+            $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id;
+            if ($campaign->fc_impressions == 0) {
+//build the campaign body array
+                $campaign_array =
+                        array(
+                            "campaignId" => $campaign->sitescout_campaign_id,
+                            "name" => $campaign->name,
+                            "status" => $campaign->status->code,
+                            "defaultBid" => $campaign->default_bid,
+                            "clickUrl" => $campaign->click_url,
+                            "budget" => array(
+                                "amount" => $campaign->budget_amount,
+                                "type" => 'daily',
+                                "evenDeliveryEnabled" => 'true'
+                            ),
+                            "flightDates" => array(
+                                "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                                "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
+                            )
+                );
+            } else {//build the campaign body array
+                $campaign_array =
+                        array(
+                            "campaignId" => $campaign->sitescout_campaign_id,
+                            "name" => $campaign->name,
+                            "status" => $campaign->status->code,
+                            "defaultBid" => $campaign->default_bid,
+                            "clickUrl" => $campaign->click_url,
+                            "budget" => array(
+                                "amount" => $campaign->budget_amount,
+                                "type" => 'daily',
+                                "evenDeliveryEnabled" => 'true'
+                            ),
+                            "frequencyCapping" => array(
+                                "impressions" => $campaign->fc_impressions,
+                                "periodInHours" => $campaign->fc_period_in_hours,
+                                "type" => 'campaign'
+                            ),
+                            "flightDates" => array(
+                                "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                                "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
+                            )
+                );
+            };
 
+            //convert campaign array to json format
+            $campaign_json = json_encode($campaign_array);
 
-        //convert campaign array to json format
-        $campaign_json = json_encode($campaign_array);
+            //call sitescout API
+            //return value : CAMPAIGN OBJECT
+            $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $campaign_json);
 
-        //call sitescout API
-        //return value : CAMPAIGN OBJECT
-        $response = $this->SiteScoutApiCall($path, EHttpClient::PATCH, null, null, $headerParameters, $campaign_json);
+            if (isset($response->errorCode)) {
+                throw new EHttpClientException(
+                Yii::t('SiteScoutAPI', 'SiteScout updateCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
+            }
 
-        if (isset($response->errorCode)) {
-            throw new EHttpClientException(
-            Yii::t('SiteScoutAPI', 'SiteScout updateCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
+            //update campaignID in sitesouct into fd_campaign table
+            //$count = 1
+            $count = $campaign->updateByPk(
+                    $campaign->id, array('status_id' => Utility::GetStatusId($response->status),
+                'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+
+            if (!isset($count)) {
+                throw new EHttpClientException(
+                Yii::t('SiteScoutAPI', 'updateCampaign: Failed to update campaign filed, campaign id:' . $id));
+            }
         }
 
+        return $response;
+    }
 
-        //update campaignID in sitesouct into fd_campaign table
-        //$count = 1
-        $count = $campaign->updateByPk(
-                $campaign->id, array('status_id' => Utility::GetStatusId($response->status),
-            'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+    /**
+     * updateCampaignOnlineStaus
+     *  
+     * Update a Campaign online/offline status
+     * Path: /advertisers/{advertiserId}/campaigns/{campaignId}
+     * HTTP Method: PUT
+     * parameter: Campaign ID
+     */
+    public function updateCampaignOnlineStaus( $id, $status_id) {
+        $path = self::SITESCOUT_BASE_URL . 'campaigns';
+        $headerParameters = array(
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
 
-        if (!isset($count)) {
-            throw new EHttpClientException(
-            Yii::t('SiteScoutAPI', 'updateCampaign: Failed to update campaign filed, campaign id:' . $id));
+        //get the campaign informaton from database
+         $campaign = Campaign::model()->findByPk($id);
+        $response = new stdClass;
+   
+         
+      if (!isset($campaign->id)) {
+          throw new EHttpClientException(
+          Yii::t('SiteScoutAPI', 'updateCampaignOnlineStaus: Failed to get the campaing record from database, please contact system administrator'));
         }
+
+        //only udate campaign has been uploaded
+     if (isset($campaign->sitescout_campaign_id)) {
+            $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id;
+
+//build the campaign body array
+            $campaign_array =
+                    array(
+                        "campaignId" => $campaign->sitescout_campaign_id,
+                        "name" => $campaign->name,
+                        "status" => Utility::GetStatusCode($status_id),
+                        "defaultBid" => $campaign->default_bid,
+                        "clickUrl" => $campaign->click_url,
+            );
+
+
+            //convert campaign array to json format
+            $campaign_json = json_encode($campaign_array);
+
+            //call sitescout API
+            //return value : CAMPAIGN OBJECT
+            $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $campaign_json);
+
+            if (isset($response->errorCode)) {
+                throw new EHttpClientException(
+                Yii::t('SiteScoutAPI', 'SiteScout updateCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
+            }
+        }  
+
+     //   return $response;
     }
 
     /**
@@ -739,7 +841,7 @@ class SiteScoutAPI {
 
         if (!isset($campaignId)) {
             throw new EHttpClientException(
-            Yii::t('SiteScoutAPI', 'removeCreative: Failed to get the creative and campaign record from database, creative ID:' . $id));
+            Yii::t('SiteScoutAPI', 'removeCreative: Failed to get the creative and campaign record from database, Please contact system adminstrator.'));
         }
 
 
@@ -752,29 +854,7 @@ class SiteScoutAPI {
 
             if (isset($response->errorCode)) {
                 throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'SiteScout removeCreative, Remove a Creative from a Campaign : error- ' . $response->errorCode . '  -  ' . $response->message . '   Creative Id:' . $id));
-            }
-
-            //update API returned status values into fd_creative table
-            //$count = 1
-            $count = $creative->updateByPk(
-                    $creative->id, array('status_id' => Utility::GetStatusId(self::STATUS_ARCHIVED),
-                'review_status_id' => Utility::GetReviewStatusId(self::STATUS_BLOCKED)));
-
-            if ($count != 1) {
-                throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'removeCreative: Failed to remove creative from sitescout, campaign id:' . $id));
-            }
-        } else { //creative has NOT been approved, remove from local 
-            //update archived status values into fd_creative table
-            //$count = 1
-            $count = $creative->updateByPk(
-                    $creative->id, array('status_id' => Utility::GetStatusId(self::STATUS_ARCHIVED),
-                'review_status_id' => Utility::GetReviewStatusId(self::STATUS_BLOCKED)));
-
-            if ($count != 1) {
-                throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'removeCampaign: Failed to remove creative local database, campaign id:' . $id));
+                Yii::t('SiteScoutAPI', 'SiteScout removeCreative, Fiailed to remove a Creative from a Campaign : error- ' . $response->errorCode . '  -  ' . $response->message . '   Please contact system adminstrator.'));
             }
         }
     }
@@ -786,6 +866,7 @@ class SiteScoutAPI {
      * Path: /advertisers/{advertiserId}/campaigns/{campaignId}
      * HTTP Method: PUT
      * parameter: Campaign ID
+     * return stdClass object
      */
     public function removeCampaign($id) {
         $path = self::SITESCOUT_BASE_URL . 'campaigns';
@@ -824,32 +905,14 @@ class SiteScoutAPI {
 
             if (isset($response->errorCode)) {
                 throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'SiteScout removeCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message . '  campaign id:' . $id));
+                Yii::t('SiteScoutAPI', 'SiteScout removeCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message . '  Please contact system administrator.'));
             }
-
-
-            //update API returned status values into fd_campaign table
-            //$count = 1
-            $count = $campaign->updateByPk(
-                    $campaign->id, array('status_id' => Utility::GetStatusId($response->status),
-                'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
-
-            if ($count != 1) {
-                throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'removeCampaign: Failed to remove campaign from sitescout, campaign id:' . $id));
-            }
-        } else { //campaign has NOT been approved, not uploaded to sitescout 
-            //update archived status values into fd_campaign table
-            //$count = 1
-            $count = $campaign->updateByPk(
-                    $campaign->id, array('status_id' => Utility::GetStatusId(self::STATUS_ARCHIVED),
-                'review_status_id' => Utility::GetReviewStatusId(self::STATUS_BLOCKED)));
-
-            if ($count != 1) {
-                throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'removeCampaign: Failed to remove campaign local database, campaign id:' . $id));
-            }
+        } else {
+            //return a empty stdclass if the campaign has not been upload to sitescout server
+            $response = new stdClass();
         }
+
+        return $response;
     }
 
     /**
@@ -928,7 +991,7 @@ class SiteScoutAPI {
         $campaign_id = $creative_asset->campaigns[0]->sitescout_campaign_id;
 
         $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign_id . '/creatives';
-  
+
         //build the creative body array
         $creative_array =
                 array(
@@ -943,7 +1006,7 @@ class SiteScoutAPI {
 
         //convert campaign array to json format
         $creative_json = json_encode($creative_array);
- 
+
         //call sitescout API
         //return value : creative OBJECT
         $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $creative_json);
@@ -961,7 +1024,7 @@ class SiteScoutAPI {
             'height' => $response->height,
             'status_id' => Utility::GetStatusId($response->status),
             'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
- 
+
         if ($count != 1) {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'addOneCreative: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
