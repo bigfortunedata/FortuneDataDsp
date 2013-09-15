@@ -16,6 +16,7 @@ class YumRegistrationForm extends YumUser {
 	public $telephone;
 	public $verifyPassword;
 	public $verifyCode; // Captcha
+        public $agree;
 
 	public function rules() 
 	{
@@ -31,7 +32,7 @@ class YumRegistrationForm extends YumUser {
 			 $this->${$rule[0]} = ''; 
 
 			 $rules = array_merge($rules, $profile->rules());	 */
-
+                $rules[] = array('agree', 'required','requiredValue' => 1, 'message'=>'You must agree to the terms and conditions');
 		$rules[] = array('username', 'required');
 		$rules[] = array('password, verifyPassword', 'required');
 		$rules[] = array('password', 'compare',
