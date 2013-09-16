@@ -175,20 +175,7 @@
     <?php endif; ?>
 
     <div class="row"><div class="span20">
-            <?php
-            $this->beginWidget('zii.widgets.jui.CJuiDialog', array(
-                'id' => 'mydialog',
-                // additional javascript options for the dialog plugin
-                'options' => array(
-                    'title' => 'Term',
-                    'autoOpen' => false,
-                ),
-            ));
-
-            echo 'This is the term page';
-
-            $this->endWidget('zii.widgets.jui.CJuiDialog');
-            ?>
+            
             <div>
 
 
@@ -197,9 +184,7 @@
                         <td><div style =" vertical-align: top;"><?php echo $activeform->checkBox($form, 'agree'); ?></div></td>
                         <td><div style =" vertical-align: bottom; "><?php echo $activeform->labelEx($form, 'agree',array('label' => 'I agree')); ?></div></td>
                         <td><div style =" vertical-align: bottom; ">                <?php
-                echo CHtml::link('Terms and Conditons', '#', array(
-                    'onclick' => '$("#mydialog").dialog("open"); return false;',
-                ));
+                 echo CHtml::link( 'Terms and Conditions  ', Yii::app()->baseUrl . '/assets/FORTUNEDATA_TERMS_AND_CONDITIONS.pdf',array('target'=>'_blank'));
                 ?>
                         </div></td>
                     </tr>
