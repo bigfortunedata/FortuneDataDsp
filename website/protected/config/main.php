@@ -95,9 +95,9 @@ return array(
     'components' => array(
         'Paypal' => array(
             'class' => 'application.components.Paypal',
-            //  'apiUsername' => 'tony_zhy_api1.yahoo.ca',
-            //	   'apiPassword' => 'TAXZA9RVZNMR6BBY',
-            //	   'apiSignature' => 'AG39LSvF2ew5ykqkWXfGZtV8u4BIAKRt.ckRWX8ZMyyWTB1WRG7UqOOG',
+             //  'apiUsername' => 'tony_zhy_api1.yahoo.ca',
+             //	   'apiPassword' => 'TAXZA9RVZNMR6BBY',
+             //	   'apiSignature' => 'AG39LSvF2ew5ykqkWXfGZtV8u4BIAKRt.ckRWX8ZMyyWTB1WRG7UqOOG',
             'apiUsername' => 'tony_zhy-facilitator_api1.yahoo.ca',
             'apiPassword' => '1376242638',
             'apiSignature' => 'ATMsUAAGY3d7lRgqNHjAmHltgCNcAsz1JQPCI7jpgQKG.diilV4X84nm',

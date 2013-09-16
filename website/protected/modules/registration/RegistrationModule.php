@@ -13,6 +13,7 @@ class RegistrationModule extends CWebModule {
 
 	public $activationSuccessView = '/registration/activation_success';
 	public $activationFailureView = '/registration/activation_failure';
+        public $termView = '/registration/term';
 
 	// Whether to confirm the activation of an user by email
 	public $enableActivationConfirmation = true;
