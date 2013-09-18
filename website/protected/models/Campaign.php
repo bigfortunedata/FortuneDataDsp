@@ -56,11 +56,15 @@ class Campaign extends FortuneDataActiveRecord
 		
 		if ($this->isNewRecord) {
 			// The status id is set to the default
-			$this->status_id = 1;
-			$this->review_status_id = 5;
+			$this->status_id = 2;
+			$this->review_status_id = 8;
 			$this->fc_period_in_hours = 24;
 			$this->fc_type_id = 1;	
 			$this->budget_type_id = 1;
+		}
+		else {
+			$this->review_status_id = 5;
+			
 		}
 		return parent::beforeSave();
 	}

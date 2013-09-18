@@ -56,7 +56,7 @@ class Creative extends FortuneDataActiveRecord
 			$this->status_id = 2;
 
 			// The review status id is set to the default
-			$this->review_status_id = 5;
+			$this->review_status_id = 8;
 			$this->width = 0;
 			$this->height = 0;
 			$this->type_id = 1;
@@ -195,7 +195,25 @@ class Creative extends FortuneDataActiveRecord
 	 */
 	public function getIsOnline()
 	{
-		if ($this->status_id == 2) return "online";
+		if ($this->status_id == 2) return true;
+		else return false;
+	}
+	
+	/**
+	 * Whether the creative is not approved
+	 */
+	public function getIsNotApproved()
+	{
+		if ($this->review_status_id == 7) return false;
+		else return true;
+	}
+
+	/**
+	 * Whether the creative is rejected
+	 */
+	public function getIsRejected()
+	{
+		if ($this->review_status_id == 2) return true;
 		else return false;
 	}
 	

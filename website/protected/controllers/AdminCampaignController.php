@@ -1,0 +1,238 @@
+<?php
+
+class AdminCampaignController extends Controller
+{
+	/**
+	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
+	 * using two-column layout. See 'protected/views/layouts/column2.php'.
+	 */
+	public $layout='//layouts/column2';
+
+	/**
+	 * @var The id of the selected campaign
+	 */
+	public $cid;
+	
+	/**
+	 * @var The site scount api object
+	 */
+	public $siteScoutApi;
+
+    public function init() {
+        Yii::import('application.extensions.SiteScout.SiteScoutAPI');
+        parent::init();
+    }
+
+	/**
+	 * @return array action filters
+	 */
+	public function filters()
+	{
+		return array(
+			'accessControl', // perform access control for CRUD operations
+		);
+	}
+
+	/**
+	 * Specifies the access control rules.
+	 * This method is used by the 'accessControl' filter.
+	 * @return array access control rules
+	 */
+	public function accessRules()
+	{
+		return array(
+			array('allow', // allow authenticated user to perform 'index', 'create', 'update', 'view', and 'delete' actions
+				'actions'=>array('index','view','approve','reject','onhold'),
+				'users'=>array('admin','shihao','tony'),
+			),
+			array('deny',  // deny all users
+				'users'=>array('*'),
+			),
+		);
+	}
+
+	/**
+	 * Displays a particular model.
+	 * @param integer $id the ID of the model to be displayed
+	 */
+	public function actionView($id)
+	{
+		$model=$this->loadModel($id);		
+		$this->cid = $id;
+		$this->render('view',array(
+			'model'=>$model,
+		));
+	}
+	
+	/**
+	 * Lists all models.
+	 */
+	public function actionIndex()
+	{
+		$dataProvider=new CActiveDataProvider('Campaign', array(
+			'criteria' => array(
+				'condition'=>'status_id!=:archivedId',
+				'params'=>array(':archivedId'=>3),
+				'order' => 'update_time DESC',
+				'limit' =>100,
+			),
+			'pagination'=>array(
+				'pageSize'=>100,
+				),
+		));
+		
+		$this->render('index',array(
+			'dataProvider'=>$dataProvider,
+		));
+	}
+
+	/**
+	 * Manages all models.
+	 */
+	public function actionAdmin()
+	{
+		$model=new Campaign('search');
+		$model->unsetAttributes();  // clear any default values
+		if(isset($_GET['Campaign']))
+			$model->attributes=$_GET['Campaign'];
+
+		$this->render('admin',array(
+			'model'=>$model,
+		));
+	}
+	
+	/**
+	 * Approve the campaign.
+	 */
+	public function actionApprove($id)
+	{
+		$model=$this->loadModel($id);
+		$successMessage = null;
+		$failureMessage = null;
+		if ($model->reviewStatus->code == 'approved') {
+			$failureMessage = "The campaign has already been approved. No need to approve again.";
+		}
+		else if ($model->reviewStatus->code == 'pending') {
+			$failureMessage = "The campaign is pending review. No need to approve again.";
+		}
+		else {
+			if ($this->siteScoutApi == null) {
+				$this->siteScoutApi = new SiteScoutAPI();
+			}
+			
+			// Check if the campaign has been approved before
+			if ($model->sitescout_campaign_id != null) {
+				
+				
+				$successMessage = "The campaign has been approved before. Updated status.";
+			}
+			else {
+				$response = $this->siteScoutApi->createCampaign($model->id);
+		        $this->siteScoutApi->setPagePosition($id);
+		        $this->siteScoutApi->addSiteRule($id);
+				
+				if ($response) {
+					$successMessage = "The campaign is pending review.";
+					$model->review_status_id = 5;
+					$model->save();
+				}
+				else {
+					$failureMessage = "Encountered error in approving this campaign";
+				}
+			}
+		}
+		
+		$message = null;
+		if ($successMessage != null) {
+			$message = $successMessage;
+			Yii::app()->user->setFlash('addCampaignSuccess', $successMessage);
+		}
+		if ($failureMessage != null) {
+			$message = $failureMessage;
+			Yii::app()->user->setFlash('addCampaignFailure', $failureMessage);
+		}
+		
+		$this->render('/adminCampaign/view',array(
+			'model'=>$model,
+			'message'=>$message,
+		));
+ 	}
+	
+	/**
+	 * Make the campaign on-hold.
+	 */
+	public function changeCampaignReviewStatus($model, $reviewStatusId)
+	{
+		$message = null;
+		if ($model->review_status_id == $reviewStatusId) {
+			$message = "The campaign is already " . $model->reviewStatus->description . ".";
+		}
+		else {
+			$model->review_status_id = $reviewStatusId;
+			$model->save();
+			if ($model->sitescout_campaign_id != null) {
+				if ($this->siteScoutApi == null) {
+					$this->siteScoutApi = new SiteScoutAPI();
+				}
+				$this->siteScoutApi->updateCampaign($model->id);
+				$message = "The campaign is changed to " . $model->reviewStatus->description . ".";
+			}
+		}
+		
+		return $message;
+	}
+	
+	/**
+	 * Make the campaign on-hold.
+	 */
+	public function actionOnhold($id)
+	{
+		$model=$this->loadModel($id);
+		$message = $this->changeCampaignReviewStatus($model, 4);
+		$this->render('/adminCampaign/view',array(
+			'model'=>$model,
+			'message'=>$message,
+		));
+	}
+
+	/**
+	 * Reject the campaign.
+	 */
+	public function actionReject($id)
+	{
+		$model=$this->loadModel($id);
+		$message = $this->changeCampaignReviewStatus($model, 2);
+		$this->render('/adminCampaign/view',array(
+			'model'=>$model,
+			'message'=>$message,
+		));
+	}
+
+	/**
+	 * Returns the data model based on the primary key given in the GET variable.
+	 * If the data model is not found, an HTTP exception will be raised.
+	 * @param integer $id the ID of the model to be loaded
+	 * @return Campaign the loaded model
+	 * @throws CHttpException
+	 */
+	public function loadModel($id)
+	{
+		$model=Campaign::model()->findByPk($id);
+		if($model===null)
+			throw new CHttpException(404,'The requested page does not exist.');
+		return $model;
+	}
+
+	/**
+	 * Performs the AJAX validation.
+	 * @param Campaign $model the model to be validated
+	 */
+	protected function performAjaxValidation($model)
+	{
+		if(isset($_POST['ajax']) && $_POST['ajax']==='campaign-form')
+		{
+			echo CActiveForm::validate($model);
+			Yii::app()->end();
+		}
+	}
+}
