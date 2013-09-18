@@ -39,24 +39,12 @@ if(isset($message) && $message != null) {
 ?>
 
 <?php
-if ($model->reviewStatus->description == 'Pending') {
+if ($model->reviewStatus->description == 'Submitted') {
 	echo CHtml::button('Approve', array('submit' =>Yii::app()->createUrl("adminCampaign/approve", array("id" => $model->id)), 'confirm'=>'Are you sure to approve this campaign?', 'name'=>'approve')); 
 	echo "<p><p>\n";
 	echo CHtml::button('Reject', array('submit' =>Yii::app()->createUrl("adminCampaign/reject", array("id" => $model->id)), 'confirm'=>'Are you sure to reject this campaign?', 'name'=>'reject'));
 }
-else if ($model->reviewStatus->description == 'Approved') {
-	echo CHtml::button('On Hold', array('submit' =>Yii::app()->createUrl("adminCampaign/onhold", array("id" => $model->id)), 'confirm'=>'Are you sure put this campaign on-hold?', 'name'=>'onhold')); 
-	echo "<p><p>\n";
-	echo CHtml::button('Reject', array('submit' =>Yii::app()->createUrl("adminCampaign/reject", array("id" => $model->id)), 'confirm'=>'Are you sure to reject this campaign?', 'name'=>'reject'));
-}
-else if ($model->reviewStatus->description == 'Denied') {
-	echo CHtml::button('Approve', array('submit' =>Yii::app()->createUrl("adminCampaign/approve", array("id" => $model->id)), 'confirm'=>'Are you sure to approve this campaign?', 'name'=>'approve')); 
-	echo "<p><p>\n";
-}
-else if ($model->reviewStatus->description == 'On Hold') {
-	echo CHtml::button('Approve', array('submit' =>Yii::app()->createUrl("adminCampaign/approve", array("id" => $model->id)), 'confirm'=>'Are you sure to approve this campaign?', 'name'=>'approve')); 
-	echo "<p><p>\n";
-}
+
 ?>
 
 <div id="creatives">

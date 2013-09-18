@@ -10,8 +10,12 @@ class AdminCreativeController extends Controller
 	
 	private $_campaign = null;
 	
+	/**
+	 * @var The site scount api object
+	 */
+	public $siteScoutApi;
+	
 	public function init() {
-        Yii::import('application.extensions.SiteScout.SiteScoutAPI');
         parent::init();
     }
 
@@ -212,7 +216,7 @@ class AdminCreativeController extends Controller
 		        $this->siteScoutApi->uploadOneCreative($id);
 		        $this->siteScoutApi->addOneCreative($id);
 				$successMessage = "The creative is pending review.";
-				$model->status_id = 5;
+				$model->review_status_id = 5;
 				$model->save();
 			}
 		}
@@ -239,6 +243,25 @@ class AdminCreativeController extends Controller
 	public function actionReject($id)
 	{
 		$model=$this->loadModel($id);
+		$message = null;
+		if ($model->reviewStatus->code != 'submitted') {
+			$message = "The creative should be in submitted status in order to be rejected.";
+		}
+		else {
+			$model->review_status_id = 2;
+			$model->save();
+			if ($model->sitescout_creative_id != null) {
+				if ($this->siteScoutApi == null) {
+					$this->siteScoutApi = new SiteScoutAPI();
+				}
+				$this->siteScoutApi->removeCreative($model->id);
+				$message = "The creative is rejected.";
+			}
+		}
+		$this->render('/adminCampaign/view',array(
+			'model'=>$this->_campaign,
+			'message'=>$message,
+		));
 		
 	}
 	

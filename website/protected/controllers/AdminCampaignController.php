@@ -19,7 +19,6 @@ class AdminCampaignController extends Controller
 	public $siteScoutApi;
 
     public function init() {
-        Yii::import('application.extensions.SiteScout.SiteScoutAPI');
         parent::init();
     }
 
@@ -122,8 +121,6 @@ class AdminCampaignController extends Controller
 			
 			// Check if the campaign has been approved before
 			if ($model->sitescout_campaign_id != null) {
-				
-				
 				$successMessage = "The campaign has been approved before. Updated status.";
 			}
 			else {
@@ -159,16 +156,17 @@ class AdminCampaignController extends Controller
  	}
 	
 	/**
-	 * Make the campaign on-hold.
+	 * Reject the campaign.
 	 */
-	public function changeCampaignReviewStatus($model, $reviewStatusId)
+	public function actionReject($id)
 	{
+		$model=$this->loadModel($id);
 		$message = null;
-		if ($model->review_status_id == $reviewStatusId) {
-			$message = "The campaign is already " . $model->reviewStatus->description . ".";
+		if ($model->reviewStatus->code != 'submitted') {
+			$message = "The campaign should be in submitted status in order to be approved.";
 		}
 		else {
-			$model->review_status_id = $reviewStatusId;
+			$model->review_status_id = 2;
 			$model->save();
 			if ($model->sitescout_campaign_id != null) {
 				if ($this->siteScoutApi == null) {
@@ -179,29 +177,6 @@ class AdminCampaignController extends Controller
 			}
 		}
 		
-		return $message;
-	}
-	
-	/**
-	 * Make the campaign on-hold.
-	 */
-	public function actionOnhold($id)
-	{
-		$model=$this->loadModel($id);
-		$message = $this->changeCampaignReviewStatus($model, 4);
-		$this->render('/adminCampaign/view',array(
-			'model'=>$model,
-			'message'=>$message,
-		));
-	}
-
-	/**
-	 * Reject the campaign.
-	 */
-	public function actionReject($id)
-	{
-		$model=$this->loadModel($id);
-		$message = $this->changeCampaignReviewStatus($model, 2);
 		$this->render('/adminCampaign/view',array(
 			'model'=>$model,
 			'message'=>$message,

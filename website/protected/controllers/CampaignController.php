@@ -154,6 +154,15 @@ class CampaignController extends Controller
 			$model->attributes=$_POST['Campaign'];
 			if($model->save()) {
 				$model->saveRegions($_POST['Campaign']);
+				
+				// Check if the APIs should be called.
+				if ($model->sitescout_campaign_id != NULL) {
+					$sdApiObject = new SiteScoutAPI();
+					$sdApiObject->updateCampaign($model->id);
+					$model->review_status_id = 5;
+					$model->save();
+				}
+				
 				$this->redirect(array('index'));
 			}
 		}
@@ -171,6 +180,12 @@ class CampaignController extends Controller
 	public function actionDelete($id)
 	{	
 		$model=$this->loadModel($id);
+		// Check if the APIs should be called.
+		if ($model->sitescout_campaign_id != NULL) {
+			$sdApiObject = new SiteScoutAPI();
+			$sdApiObject->removeCampaign($model->id);
+		}
+		
 		$model->removeCampaign();
 		
 		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser

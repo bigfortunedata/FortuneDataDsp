@@ -62,10 +62,6 @@ class Campaign extends FortuneDataActiveRecord
 			$this->fc_type_id = 1;	
 			$this->budget_type_id = 1;
 		}
-		else {
-			$this->review_status_id = 5;
-			
-		}
 		return parent::beforeSave();
 	}
 	

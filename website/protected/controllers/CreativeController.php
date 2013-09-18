@@ -129,6 +129,13 @@ class CreativeController extends Controller
 	 */
 	public function actionDelete($id)
 	{	
+		$model=$this->loadModel($id);
+		// Check if the APIs should be called.
+		if ($model->sitescout_creative_id != NULL) {
+			$sdApiObject = new SiteScoutAPI();
+			$sdApiObject->removeCreative($model->id);
+		}
+		
 		$this->_campaign->removeCreative($id);
 		$this->loadModel($id)->delete();
 	}

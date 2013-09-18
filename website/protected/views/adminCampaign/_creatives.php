@@ -27,7 +27,7 @@ $gridColumns = array(
 			'reject' => array(
 	            'label'=>'Reject',
 	            'icon'=>'icon-thumbs-down',
-	            'url'=>'Yii::app()->createUrl("/adminCreative/reject", array("id"=>$data->id, "cid"=>'.$cid.')))',
+	            'url'=>'array("/adminCreative/reject", "id"=>$data->id, "cid"=>'.$cid.')',
 	            'options'=>array(
 	                'class'=>'btn btn-small',
 					'confirm'=>'Do you want to reject this creative?',
@@ -35,28 +35,6 @@ $gridColumns = array(
 	        ),
 		),
     ),
-	array(
-		'class'=>'bootstrap.widgets.TbToggleColumn',
-    	'toggleAction'=>'adminCreative/approve',
-    	'name' => 'isNotApproved',
-    	'header' => 'Approve',
-		'displayText' => true,
-		'checkedButtonLabel' => 'Approve',
-		'uncheckedButtonLabel' => 'Cancel Approval',
-		'additionalParam' => '"cid"=>'.$cid,
-	),
-	array(
-		'class'=>'bootstrap.widgets.TbToggleColumn',
-    	'toggleAction'=>'adminCreative/reject',
-    	'name' => 'isRejected',
-    	'header' => 'Reject',
-		'displayText' => true,
-		'checkedIcon' => "icon-remove-sign",
-		'uncheckedIcon' => "icon-remove-sign",
-		'checkedButtonLabel' => 'Reject',
-		'uncheckedButtonLabel' => 'Reject',
-		'additionalParam' => '"cid"=>'.$cid,
-	),
 );
 
 $this->widget('bootstrap.widgets.TbExtendedGridView', array(
