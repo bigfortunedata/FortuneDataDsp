@@ -315,7 +315,7 @@ class SiteScoutAPI {
 
         if (!isset($campaign->id)) {
             throw new EHttpClientException(
-            Yii::t('SiteScoutAPI', 'createCampaign: Failed to get teh campaing record from database, campaign ID:' . $id));
+            Yii::t('SiteScoutAPI', 'createCampaign: Failed to get the campaing record from database, campaign ID:' . $id));
         }
 
         //
@@ -376,8 +376,6 @@ class SiteScoutAPI {
             Yii::t('SiteScoutAPI', 'SiteScout createCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
         }
 
-        $returnValue = (array) $response;
-
         //update campaignID in sitesouct into fd_campaign table
         //$count = 1
         $count = $campaign->updateByPk(
@@ -389,6 +387,12 @@ class SiteScoutAPI {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'createCampaign: Failed to update campaign sitescout_campaign_id filed, campaign id:' . $id));
         }
+        
+       //when we submit a ONLINE campaign, the API set default status to OFFLINE 
+        //call updateCampaignOnlineStaus to manually update the status to ONLINE
+        if ($campaign->status_id == 2)
+            $this->updateCampaignOnlineStaus($campaign->id, 2);
+        
         return $response;
     }
 
@@ -478,7 +482,7 @@ class SiteScoutAPI {
             $creative_array =
                     array(
                         "label" => $creative_assets->label . '-' . time() . '-' . rand(1, 1000) . '---API TESTING',
-                        "status" => self::STATUS_ONLINE,
+                        "status" => Utility::GetStatusCode($creative_asset->status_id),
                         "width" => $creative_assets->width,
                         "height" => $creative_assets->height,
                         "type" => 'banner',
@@ -512,8 +516,6 @@ class SiteScoutAPI {
                 Yii::t('SiteScoutAPI', 'addAllCreative: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
             }
         }
-        
-        
     }
 
     /**
@@ -562,7 +564,7 @@ class SiteScoutAPI {
             $count = $creative_assets->updateByPk(
                     $creative_assets->id, array('sitescout_creative_id' => $response->creativeId));
         }
-        
+
         return $response;
     }
 
@@ -776,7 +778,7 @@ class SiteScoutAPI {
      * HTTP Method: PUT
      * parameter: Campaign ID
      */
-    public function updateCampaignOnlineStaus( $id, $status_id) {
+    public function updateCampaignOnlineStaus($id, $status_id) {
         $path = self::SITESCOUT_BASE_URL . 'campaigns';
         $headerParameters = array(
             'Content-Type' => 'application/json',
@@ -784,17 +786,17 @@ class SiteScoutAPI {
             'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
 
         //get the campaign informaton from database
-         $campaign = Campaign::model()->findByPk($id);
+        $campaign = Campaign::model()->findByPk($id);
         $response = new stdClass;
-   
-         
-      if (!isset($campaign->id)) {
-          throw new EHttpClientException(
-          Yii::t('SiteScoutAPI', 'updateCampaignOnlineStaus: Failed to get the campaing record from database, please contact system administrator'));
+
+
+        if (!isset($campaign->id)) {
+            throw new EHttpClientException(
+            Yii::t('SiteScoutAPI', 'updateCampaignOnlineStaus: Failed to get the campaing record from database, please contact system administrator'));
         }
 
         //only udate campaign has been uploaded
-     if (isset($campaign->sitescout_campaign_id)) {
+        if (isset($campaign->sitescout_campaign_id)) {
             $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id;
 
 //build the campaign body array
@@ -817,9 +819,9 @@ class SiteScoutAPI {
 
             if (isset($response->errorCode)) {
                 throw new EHttpClientException(
-                Yii::t('SiteScoutAPI', 'SiteScout updateCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
+                Yii::t('SiteScoutAPI', 'SiteScout updateCampaignOnlineStaus API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
             }
-        }  
+        }
 
         return $response;
     }
@@ -913,11 +915,8 @@ class SiteScoutAPI {
                 throw new EHttpClientException(
                 Yii::t('SiteScoutAPI', 'SiteScout removeCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message . '  Please contact system administrator.'));
             }
-        } else {
-            //return a empty stdclass if the campaign has not been upload to sitescout server
-            $response = new stdClass();
         }
-
+       
         return $response;
     }
 
@@ -1003,7 +1002,7 @@ class SiteScoutAPI {
         $creative_array =
                 array(
                     "label" => $creative_asset->label . '-' . time() . '-' . rand(1, 1000) . '---API TESTING',
-                    "status" => self::STATUS_ONLINE,
+                    "status" => Utility::GetStatusCode($creative_asset->status_id),
                     "width" => $creative_asset->width,
                     "height" => $creative_asset->height,
                     "type" => 'banner',
