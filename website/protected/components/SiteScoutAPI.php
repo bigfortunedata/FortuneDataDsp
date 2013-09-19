@@ -476,8 +476,8 @@ class SiteScoutAPI {
             //build the creative body array
             $creative_array =
                     array(
-                        "label" => $creative_assets->label . '-' . time() . '-' . rand(1, 1000) . '---API TESTING',
-                        "status" => Utility::GetStatusCode($creative_asset->status_id),
+                        "label" => 'API TESTING' . '-' . time() . '-' . rand(1, 1000) ,
+                        "status" => Utility::GetStatusCode($creative_assets->status_id),
                         "width" => $creative_assets->width,
                         "height" => $creative_assets->height,
                         "type" => 'banner',
