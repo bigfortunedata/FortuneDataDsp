@@ -121,17 +121,19 @@ class AdminCampaignController extends Controller
 			
 			// Check if the campaign has been approved before
 			if ($model->sitescout_campaign_id != null) {
-				$successMessage = "The campaign has been approved before. Updated status.";
+				$response = $this->siteScoutApi->actionUpdateCampaign;
+                                      //$successMessage = "The campaign has been approved before. Updated status.";
 			}
 			else {
-				$response = $this->siteScoutApi->createCampaign($model->id);
+		        $response = $this->siteScoutApi->createCampaign($model->id);
+                        $this->siteScoutApi->uploadAllCreative($id);
+                        $this->siteScoutApi->addAllCreative($id);
 		        $this->siteScoutApi->setPagePosition($id);
 		        $this->siteScoutApi->addSiteRule($id);
 				
-				if ($response) {
+				if (isset($response->status)) {
 					$successMessage = "The campaign is pending review.";
-					$model->review_status_id = 5;
-					$model->save();
+					//$model->save();
 				}
 				else {
 					$failureMessage = "Encountered error in approving this campaign";
