@@ -389,6 +389,7 @@ class SiteScoutAPI {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'createCampaign: Failed to update campaign sitescout_campaign_id filed, campaign id:' . $id));
         }
+        return $response;
     }
 
     /**
@@ -511,6 +512,8 @@ class SiteScoutAPI {
                 Yii::t('SiteScoutAPI', 'addAllCreative: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
             }
         }
+        
+        
     }
 
     /**
@@ -554,13 +557,13 @@ class SiteScoutAPI {
             //return value : creative OBJECT
             $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $creative_json);
 
-            $returnValue = (array) $response;
-
             //update campaignID in sitesouct into fd_campaign table
             //$count = 1
             $count = $creative_assets->updateByPk(
                     $creative_assets->id, array('sitescout_creative_id' => $response->creativeId));
         }
+        
+        return $response;
     }
 
     /**
@@ -598,6 +601,7 @@ class SiteScoutAPI {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'SiteScout setPagePosition API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
         }
+        return $response;
     }
 
     /**
@@ -664,6 +668,7 @@ class SiteScoutAPI {
                 }
             }
         }
+        return $response;
     }
 
     /**
@@ -816,7 +821,7 @@ class SiteScoutAPI {
             }
         }  
 
-     //   return $response;
+        return $response;
     }
 
     /**
@@ -857,6 +862,7 @@ class SiteScoutAPI {
                 Yii::t('SiteScoutAPI', 'SiteScout removeCreative, Fiailed to remove a Creative from a Campaign : error- ' . $response->errorCode . '  -  ' . $response->message . '   Please contact system adminstrator.'));
             }
         }
+        return $response;
     }
 
     /**
@@ -969,6 +975,7 @@ class SiteScoutAPI {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'uploadOneCreative: Failed to update creative asset_url filed, creative id:' . $id . '  creative name:' . $creative_name));
         }
+        return $response;
     }
 
     /**
@@ -1029,6 +1036,7 @@ class SiteScoutAPI {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'addOneCreative: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
         }
+        return $response;
     }
 
 }
