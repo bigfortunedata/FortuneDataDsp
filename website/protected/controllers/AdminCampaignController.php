@@ -126,10 +126,13 @@ class AdminCampaignController extends Controller
 			}
 			else {
 		        $response = $this->siteScoutApi->createCampaign($model->id);
-                        $this->siteScoutApi->uploadAllCreative($id);
-                        $this->siteScoutApi->addAllCreative($id);
-		        $this->siteScoutApi->setPagePosition($id);
-		        $this->siteScoutApi->addSiteRule($id);
+                        $this->siteScoutApi->uploadAllCreative($model->id);
+                        $this->siteScoutApi->addAllCreative($model->id);
+		        $this->siteScoutApi->setPagePosition($model->id);
+		        $this->siteScoutApi->addSiteRule($model->id);
+                        //Campaign only can be set online as it has both creatives and inventory sources
+                        if ($model->status_id == 2)
+                             $this->siteScoutApi->updateCampaignOnlineStaus($model->id, 2);
 				
 				if (isset($response->status)) {
 					$successMessage = "The campaign is pending review.";

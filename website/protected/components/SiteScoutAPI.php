@@ -388,11 +388,6 @@ class SiteScoutAPI {
             Yii::t('SiteScoutAPI', 'createCampaign: Failed to update campaign sitescout_campaign_id filed, campaign id:' . $id));
         }
         
-       //when we submit a ONLINE campaign, the API set default status to OFFLINE 
-        //call updateCampaignOnlineStaus to manually update the status to ONLINE
-        if ($campaign->status_id == 2)
-            $this->updateCampaignOnlineStaus($campaign->id, 2);
-        
         return $response;
     }
 
