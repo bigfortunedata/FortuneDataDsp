@@ -68,7 +68,7 @@ class Campaign extends FortuneDataActiveRecord {
 
         //call API to change campaign status
         $curr = self::findByPk($this->id);
-        if ($curr) {
+        if ($curr && $curr->sitescout_campaign_id ) {
             if ($this->status_id != $curr->status_id) {
                 $this->siteScoutApi = new SiteScoutAPI();
                 $response = $this->siteScoutApi->updateCampaignOnlineStaus($this->id, $this->status_id);
@@ -289,7 +289,7 @@ class Campaign extends FortuneDataActiveRecord {
      */
     public function removeCampaign() {
         $this->siteScoutApi = new SiteScoutAPI();
-        $response = $this->siteScoutApi->removeCampaign($this->id);
+        $this->siteScoutApi->removeCampaign($this->id);
 
         $command = Yii::app()->db->createCommand();
         $command->update('fd_campaign', array(

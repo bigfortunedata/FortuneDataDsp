@@ -841,9 +841,9 @@ class SiteScoutAPI {
         $creative = Creative::model()->findByPk($id);
         $campaignId = $creative->campaigns[0]->sitescout_campaign_id;
 
-        if (!isset($campaignId)) {
+        if (!isset($creative->id)) {
             throw new EHttpClientException(
-            Yii::t('SiteScoutAPI', 'removeCreative: Failed to get the creative and campaign record from database, Please contact system adminstrator.'));
+            Yii::t('SiteScoutAPI', 'removeCreative: Failed to get the creative and campaign record from database, Please contact system adminstrator. '));
         }
 
 
@@ -859,7 +859,7 @@ class SiteScoutAPI {
                 Yii::t('SiteScoutAPI', 'SiteScout removeCreative, Fiailed to remove a Creative from a Campaign : error- ' . $response->errorCode . '  -  ' . $response->message . '   Please contact system adminstrator.'));
             }
         }
-        return $response;
+        
     }
 
     /**
@@ -873,6 +873,7 @@ class SiteScoutAPI {
      */
     public function removeCampaign($id) {
         $path = self::SITESCOUT_BASE_URL . 'campaigns';
+        $response = new stdClass;
         $headerParameters = array(
             'Content-Type' => 'application/json',
             'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
@@ -911,8 +912,8 @@ class SiteScoutAPI {
                 Yii::t('SiteScoutAPI', 'SiteScout removeCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message . '  Please contact system administrator.'));
             }
         }
+        return $response ;
        
-        return $response;
     }
 
     /**
