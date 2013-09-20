@@ -30,7 +30,7 @@ return array(
     ),
     'modules' => array(
         'user' => array(
-            'debug' => true,
+            'debug' => false,
             'returnUrl' => '/',
             'returnLogoutUrl' => '/',
             'userTable' => 'fd_user',

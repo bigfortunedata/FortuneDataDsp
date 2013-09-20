@@ -39,10 +39,15 @@ if(isset($message) && $message != null) {
 ?>
 
 <?php
-if ($model->reviewStatus->description == 'Submitted') {
-	echo CHtml::button('Approve', array('submit' =>Yii::app()->createUrl("adminCampaign/approve", array("id" => $model->id)), 'confirm'=>'Are you sure to approve this campaign?', 'name'=>'approve')); 
+if ($model->reviewStatus->description == 'Submitted' && !isset($model->sitescout_campaign_id)) {
+	echo CHtml::button('Approve New Campaign', array('submit' =>Yii::app()->createUrl("adminCampaign/approve", array("id" => $model->id)), 'confirm'=>'Are you sure to approve this new campaign?', 'name'=>'approve')); 
 	echo "<p><p>\n";
-	echo CHtml::button('Reject', array('submit' =>Yii::app()->createUrl("adminCampaign/reject", array("id" => $model->id)), 'confirm'=>'Are you sure to reject this campaign?', 'name'=>'reject'));
+	echo CHtml::button('Reject New Campaign', array('submit' =>Yii::app()->createUrl("adminCampaign/reject", array("id" => $model->id)), 'confirm'=>'Are you sure to reject this new campaign?', 'name'=>'reject'));
+}
+else if ($model->reviewStatus->description == 'Submitted' && isset($model->sitescout_campaign_id)) {
+	echo CHtml::button('Approve Campaign Update', array('submit' =>Yii::app()->createUrl("adminCampaign/approve", array("id" => $model->id)), 'confirm'=>'Are you sure to approve this campaign update?', 'name'=>'approve')); 
+	echo "<p><p>\n";
+	echo CHtml::button('Reject Campaign Update', array('submit' =>Yii::app()->createUrl("adminCampaign/reject", array("id" => $model->id)), 'confirm'=>'Are you sure to reject this campaign update?', 'name'=>'reject'));
 }
 
 ?>

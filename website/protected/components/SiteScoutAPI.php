@@ -473,6 +473,9 @@ class SiteScoutAPI {
         $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id . '/creatives';
 
         foreach ($creative_asset as $creative_assets) {
+            //only upload creative status is submitted
+            if ($creative_assets->review_status_id == 8)
+            {
             //build the creative body array
             $creative_array =
                     array(
@@ -510,6 +513,7 @@ class SiteScoutAPI {
                 throw new EHttpClientException(
                 Yii::t('SiteScoutAPI', 'addAllCreative: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
             }
+        }
         }
     }
 

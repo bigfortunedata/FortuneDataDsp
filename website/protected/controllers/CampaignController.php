@@ -156,12 +156,14 @@ class CampaignController extends Controller
 				$model->saveRegions($_POST['Campaign']);
 				
 				// Check if the APIs should be called.
-				if ($model->sitescout_campaign_id != NULL) {
-					$sdApiObject = new SiteScoutAPI();
-					$sdApiObject->updateCampaign($model->id);
-					$model->review_status_id = 5;
+				//if ($model->sitescout_campaign_id != NULL) {
+				//	$sdApiObject = new SiteScoutAPI();
+				//	$sdApiObject->updateCampaign($model->id);
+                               
+                                //change the status to submit for all updating 
+					$model->review_status_id = 8;
 					$model->save();
-				}
+				//}
 				
 				$this->redirect(array('index'));
 			}
