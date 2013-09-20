@@ -131,10 +131,7 @@ class AdminCampaignController extends Controller {
                 //we manually set it status back to ONLINE
                 if ($model->status_id == 2) {
                     $response = $this->siteScoutApi->updateCampaignOnlineStaus($model->id, 2);
-                    $model->status_id = Utility::GetStatusId($response->status);
-                    $model->review_status_id = Utility::GetReviewStatusId($response->reviewStatus);
-                    $model->save();
-                }
+                              }
 
                 if (isset($response->status)) {
                     $successMessage = "The campaign is pending review.";

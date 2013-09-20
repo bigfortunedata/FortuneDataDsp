@@ -750,7 +750,7 @@ class SiteScoutAPI {
                 Yii::t('SiteScoutAPI', 'SiteScout updateCampaign API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
             }
 
-            //update campaignID in sitesouct into fd_campaign table
+            //update status into fd_campaign table
             //$count = 1
             $count = $campaign->updateByPk(
                     $campaign->id, array('status_id' => Utility::GetStatusId($response->status),
@@ -816,7 +816,19 @@ class SiteScoutAPI {
                 throw new EHttpClientException(
                 Yii::t('SiteScoutAPI', 'SiteScout updateCampaignOnlineStaus API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
             }
-        }
+       
+             //update status into fd_campaign table
+            //$count = 1
+            $count = $campaign->updateByPk(
+                    $campaign->id, array('status_id' => Utility::GetStatusId($response->status),
+                'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+
+            if (!isset($count)) {
+                throw new EHttpClientException(
+                Yii::t('SiteScoutAPI', 'updateCampaignOnlineStaus: Failed to update campaign filed, campaign id:' . $id));
+            }
+            
+            }
 
         return $response;
     }
