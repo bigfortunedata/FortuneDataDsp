@@ -14,7 +14,7 @@
  * @package
  * @version 1.0
  */
-class SiteScoutAPI {
+class CronSiteScoutAPI {
 
     /**
      * The access token array
@@ -128,8 +128,8 @@ class SiteScoutAPI {
         Yii::import('application.extensions.EHttpClient.*');
         Yii::import('application.extensions.EHttpClient.adapter.*');
 
-        $this->session = Yii::app()->session;
-        $this->access_token = $this->session['access_token'];
+        // $this->session = Yii::app()->session;
+        // $this->access_token = $this->session['access_token'];
 
         if ($this->isAccessTokenExpired()) {
             $this->access_token = $this->refreshAccessToken();
@@ -1046,7 +1046,75 @@ class SiteScoutAPI {
         return $response;
     }
 
-    
+    /**
+     *   fetchCampaignStatus
+     *
+     * Get Campaign Status 
+     * update the status on fd_campaigns  
+     * Path: /advertisers/{advertiserId}/campaigns/{campaignId}
+     * HTTP Method: GET
+     */
+    public function fetchCampaignStatus() {
+        $path = self::SITESCOUT_BASE_URL . 'campaigns/';
+        $response = new stdClass;
+        $headerParameters = array(
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
+
+        //get the campaign informaton from database
+        $campaign = Campaign::model()->findAll('review_status_id = :review_status_id and status_id != :status_id', array('review_status_id' => 5, ':status_id' => 3));
+
+        foreach ($campaign as $campaigns) {
+
+            if (isset($campaigns->sitescout_campaign_id)) {
+                $api_path = $path . $campaigns->sitescout_campaign_id;
+                //call sitescout API
+                //return value : CAMPAIGN OBJECT
+                $response = $this->SiteScoutApiCall($api_path, EHttpClient::GET, null, null, $headerParameters);
+
+                Campaign::model()->updateByPk($campaigns->id, array('status_id' => Utility::GetStatusId($response->status),
+                    'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+            }
+        };
+
+        return $response;
+    }
+
+    /**
+     *   fetchCreativeStatus
+     *
+     * Get Creative Status 
+     * update the status on fd_creatives  
+     * Path: /advertisers/{advertiserId}/campaigns/{campaignId}/creatives/{creativeId}
+     * HTTP Method: GET
+     */
+    public function fetchCreativeStatus() {
+        $path = self::SITESCOUT_BASE_URL . 'campaigns/';
+        $response = new stdClass;
+        $headerParameters = array(
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
+
+        //get the campaign informaton from database
+        $creative = Creative::model()->findAll('review_status_id = :review_status_id and status_id != :status_id', array('review_status_id' => 5, ':status_id' => 3));
+
+        foreach ($creative as $creatives) {
+
+            if (isset($creatives->sitescout_creative_id)) {
+                $api_path = $path .$creatives->campaigns[0]->sitescout_campaign_id.'/creatives/'. $creatives->sitescout_creative_id;
+                //call sitescout API
+                //return value : CREATIVE OBJECT
+                $response = $this->SiteScoutApiCall($api_path, EHttpClient::GET, null, null, $headerParameters);
+
+                Creative::model()->updateByPk($creatives->id, array('status_id' => Utility::GetStatusId($response->status),
+                    'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+            }
+        };
+
+        return $response;
+    }
 
 }
 
