@@ -628,10 +628,16 @@ class SiteScoutAPI {
 
         foreach ($creative_asset as $creative_assets) {
 
-            //randomly fetch 1 site for the campaign
+            //randomly fetch 10 site for one campaign creative
             //will be replaced with FD algorithm function
-            $site_rule = SiteRule::model()->findAll();
-
+            $site_rule = SiteRule::model()->findAll(array(
+                'select' => '*, rand() as rand',
+                'limit' => 10,
+                'order' => 'rand',
+                    )
+            );
+            $site_rule_count = 0;
+            
             foreach ($site_rule as $site_rules) {
                 $campaign_site_rule = new CampaignSiteRule;
                 $campaign_site_rule->campaign_id = $campaign->id;
@@ -656,19 +662,26 @@ class SiteScoutAPI {
                 //return value :  OBJECT
                 $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $campaign_site_rule_json);
 
-                $returnValue = (array) $response;
+               // $returnValue = (array) $response;
 
                 if (isset($response->ruleId)) {
+                    $site_rule_count = $site_rule_count + 1;
+                    
                     $campaign_site_rule->save();
+                    
                     $count = $campaign_site_rule->updateByPk(
                             $campaign_site_rule->id, array('status' => $response->reviewStatus,
                         'sitescout_rule_id' => $response->ruleId,
                         'sitescout_rule_link' => $response->links[0]->href
                     ));
                 }
+                
+                //for each creative, randomly assign 10 site
+                if ($site_rule_count==10)
+                    break;
             }
         }
-        return $response;
+       
     }
 
     /**
@@ -1045,8 +1058,6 @@ class SiteScoutAPI {
         }
         return $response;
     }
-
-    
 
 }
 
