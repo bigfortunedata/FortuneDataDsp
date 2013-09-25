@@ -404,9 +404,11 @@ class Campaign extends FortuneDataActiveRecord {
      */
     public function buildRegionsTree($node) {
         $regionsTree = "";
+        $rootNode = 0;
         if ($node == null) {
             $node = Region::model()->findByPk(1);
             $regionsTree .= '<ul id="tree2">';
+            $rootNode = 1;
         }
 
         $checked = "";
@@ -422,7 +424,9 @@ class Campaign extends FortuneDataActiveRecord {
             $checked = 'checked';
         }
 
-        $regionsTree .= '<li><input name="Campaign[region_' . $node->id . ']" id="campaign_region_' . $node->id . '" type="checkbox"' . $checked . '>' . $node->name . "\n";
+        if (!$rootNode) {
+	        $regionsTree .= '<li><input name="Campaign[region_' . $node->id . ']" id="campaign_region_' . $node->id . '" type="checkbox"' . $checked . '>' . $node->name . "\n";
+        }
         if (count($node->children) > 0) {
             $regionsTree .= "<ul>\n";
             for ($i = 0; $i < count($node->children); $i++) {

@@ -517,6 +517,50 @@ class SiteScoutAPI {
     }
 
     /**
+     *   allChildRegionsSelected
+     *
+     * Check if all the child regions (including itself) are selected.
+     */
+    private function allChildRegionsSelected($campaign, $node) {
+	    $regionSelected = false;
+        foreach ($campaign->regions as $myRegion) {
+            if ($node->id === $myRegion->id) {
+                $regionSelected = true;
+            }
+        }
+        if ($regionSelected == false) {
+	        return false;
+        }
+
+        foreach ($node->children as $childRegion) {
+            if (!$this->allChildRegionsSelected($campaign, $childRegion)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     *   addSelectedRegions
+     *
+     * Add all selection regions.
+     * parameter: $campaign The campaign object
+     *            $node The region node
+     *            $selectedRegions The array of selected regions
+     */
+    private function addSelectedRegions($campaign, $node, &$selectedRegions) {
+	    if ($this->allChildRegionsSelected($campaign, $node)) {
+		    $selectedRegions[] = $node;
+	    }
+	    else {
+		    foreach ($node->children as $childRegion) {
+	            $this->addSelectedRegions($campaign, $childRegion, $selectedRegions);
+	        }
+	    }
+    }
+
+    /**
      *   addCampaignAllGeoRule
      *
      * Add all Geo Rule to a campaign
@@ -525,7 +569,6 @@ class SiteScoutAPI {
      * parameter: Campaign ID
      */
     public function addAllGeoRule($id) {
-
         $headerParameters = array(
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
@@ -533,6 +576,16 @@ class SiteScoutAPI {
 
         //get the campaign informaton from database
         $campaign = Campaign::model()->findByPk($id);
+        $selectedRegions = array();
+        $root = Region::model()->findByPk(1);
+        foreach ($root->children as $myRegion) {
+            $this->addSelectedRegions($campaign, $myRegion, $selectedRegions);
+        }
+        
+        // TODO: API call here
+        // The $selectedRegions array should contain all the selected regions. See the Region model for the properties (id, name, etc.).
+        
+
         $creative_asset = $campaign->creatives;
 
         $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id . '/targeting/geo';
