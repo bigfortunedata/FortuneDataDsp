@@ -139,10 +139,16 @@ return array(
         'log' => array(
             'class' => 'CLogRouter',
             'routes' => array(
-                array(
+              /*  array(
                     'class' => 'CFileLogRoute',
                     'levels' => 'error',
-                ),
+                ),*/
+                array(
+                        'class' => 'CDbLogRoute',
+                        'levels' => 'error',
+                        'connectionID' => 'db',
+                        'logTableName' => 'fd_cron_error_log'
+                    ),
                 array(
                     'class' => 'CFileLogRoute',
                     'levels' => 'info, trace',

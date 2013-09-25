@@ -5,10 +5,11 @@ class FetchStatusCommand extends CConsoleCommand {
     private $_siteScoutApi;
 
     public function run($args) {
+        //fetch campaign status 
         $error_msg = null;
         $batchjoblog = new BatchJobLog;
         $batchjoblog->start_datetime = date("Y-m-d H:i:s");
-        $batchjoblog->batch_job_name = 'FetchStatusCommand';
+        $batchjoblog->batch_job_name = 'fetchCampaignStatus';
         $batchjoblog->save();
 
         if ($this->_siteScoutApi == null) {
@@ -17,27 +18,40 @@ class FetchStatusCommand extends CConsoleCommand {
 
         $response = $this->_siteScoutApi->fetchCampaignStatus();
 
-        if (isset($response->errorCode)) {
-            $error_msg = 'fetchCampaignStatus failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
-        }
-
-
-        $response = $this->_siteScoutApi->fetchCreativeStatus();
-
-        if (isset($response->errorCode)) {
-            $error_msg = $error_msg . ' fetchCreativeStatus failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
-        }
-
         $batchjoblog->end_datetime = date("Y-m-d H:i:s");
-        if ($error_msg == null) {
+        if ($response == 0) {
             $batchjoblog->status = 'success';
         } else {
             $batchjoblog->status = 'fail';
+            $batchjoblog->log = $response.' Campaigns failed to get the status, please view error message at fd_cron_error_log table ';
         };
-        $batchjoblog->log = $error_msg;
+
         $batchjoblog->save();
 
-        //var_dump($response);
+        //fetching creative status
+
+        $error_msg = null;
+        $batchjoblog = new BatchJobLog;
+        $batchjoblog->start_datetime = date("Y-m-d H:i:s");
+        $batchjoblog->batch_job_name = 'fetchCreativeStatus';
+        $batchjoblog->save();
+
+        if ($this->_siteScoutApi == null) {
+            $this->_siteScoutApi = new CronSiteScoutAPI();
+        }
+
+        $response = $this->_siteScoutApi->fetchCreativeStatus();
+
+        $batchjoblog->end_datetime = date("Y-m-d H:i:s");
+        if ($response == 0) {
+            $batchjoblog->status = 'success';
+        } else {
+            $batchjoblog->status = 'fail';
+            $batchjoblog->log = $response.' Creatives failed to get the status, please view error at fd_cron_error_log table ';
+        };
+
+        $batchjoblog->save();
+
     }
 
 }

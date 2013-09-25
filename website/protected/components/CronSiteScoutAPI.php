@@ -1057,6 +1057,7 @@ class CronSiteScoutAPI {
     public function fetchCampaignStatus() {
         $path = self::SITESCOUT_BASE_URL . 'campaigns/';
         $response = new stdClass;
+        $return = 0;
         $headerParameters = array(
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
@@ -1073,12 +1074,20 @@ class CronSiteScoutAPI {
                 //return value : CAMPAIGN OBJECT
                 $response = $this->SiteScoutApiCall($api_path, EHttpClient::GET, null, null, $headerParameters);
 
-                Campaign::model()->updateByPk($campaigns->id, array('status_id' => Utility::GetStatusId($response->status),
-                    'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+                if (isset($response->errorCode)) {
+
+                    $message = $campaigns->id . '-' . $campaigns->sitescout_campaign_id . ' fetchCampaignStatus failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
+                    Yii::log($message, 'error');
+                    $return = $return + 1;
+                } else {
+
+                    Campaign::model()->updateByPk($campaigns->id, array('status_id' => Utility::GetStatusId($response->status),
+                        'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+                }
             }
         };
 
-        return $response;
+        return $return;
     }
 
     /**
@@ -1092,6 +1101,7 @@ class CronSiteScoutAPI {
     public function fetchCreativeStatus() {
         $path = self::SITESCOUT_BASE_URL . 'campaigns/';
         $response = new stdClass;
+        $return = 0;
         $headerParameters = array(
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
@@ -1103,17 +1113,27 @@ class CronSiteScoutAPI {
         foreach ($creative as $creatives) {
 
             if (isset($creatives->sitescout_creative_id)) {
-                $api_path = $path .$creatives->campaigns[0]->sitescout_campaign_id.'/creatives/'. $creatives->sitescout_creative_id;
+                if($creatives->campaigns[0]->status_id == 2){
+                $api_path = $path . $creatives->campaigns[0]->sitescout_campaign_id . '/creatives/' . $creatives->sitescout_creative_id;
                 //call sitescout API
                 //return value : CREATIVE OBJECT
                 $response = $this->SiteScoutApiCall($api_path, EHttpClient::GET, null, null, $headerParameters);
 
-                Creative::model()->updateByPk($creatives->id, array('status_id' => Utility::GetStatusId($response->status),
-                    'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+                if (isset($response->errorCode)) {
+
+                    $message = $creatives->id . '-' . $creatives->sitescout_creative_id . ' fetchCreativeStatus failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
+                    Yii::log($message, 'error');
+                    $return = $return + 1;
+                } else {
+
+                    Creative::model()->updateByPk($creatives->id, array('status_id' => Utility::GetStatusId($response->status),
+                        'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+                }
+                }
             }
         };
 
-        return $response;
+        return $return;
     }
 
 }
