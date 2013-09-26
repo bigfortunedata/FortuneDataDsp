@@ -522,14 +522,14 @@ class SiteScoutAPI {
      * Check if all the child regions (including itself) are selected.
      */
     private function allChildRegionsSelected($campaign, $node) {
-	    $regionSelected = false;
+        $regionSelected = false;
         foreach ($campaign->regions as $myRegion) {
             if ($node->id === $myRegion->id) {
                 $regionSelected = true;
             }
         }
         if ($regionSelected == false) {
-	        return false;
+            return false;
         }
 
         foreach ($node->children as $childRegion) {
@@ -550,14 +550,13 @@ class SiteScoutAPI {
      *            $selectedRegions The array of selected regions
      */
     private function addSelectedRegions($campaign, $node, &$selectedRegions) {
-	    if ($this->allChildRegionsSelected($campaign, $node)) {
-		    $selectedRegions[] = $node;
-	    }
-	    else {
-		    foreach ($node->children as $childRegion) {
-	            $this->addSelectedRegions($campaign, $childRegion, $selectedRegions);
-	        }
-	    }
+        if ($this->allChildRegionsSelected($campaign, $node)) {
+            $selectedRegions[] = $node;
+        } else {
+            foreach ($node->children as $childRegion) {
+                $this->addSelectedRegions($campaign, $childRegion, $selectedRegions);
+            }
+        }
     }
 
     /**
@@ -581,42 +580,42 @@ class SiteScoutAPI {
         foreach ($root->children as $myRegion) {
             $this->addSelectedRegions($campaign, $myRegion, $selectedRegions);
         }
-        
-        // TODO: API call here
-        // The $selectedRegions array should contain all the selected regions. See the Region model for the properties (id, name, etc.).
-        
-
-        $creative_asset = $campaign->creatives;
 
         $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id . '/targeting/geo';
-
-        foreach ($creative_asset as $creative_assets) {
-            //build the creative body array
-            $creative_array =
-                    array(
-                        "label" => $creative_assets->label . '-' . time() . '-' . rand(1, 1000) . '---API TESTING',
-                        "status" => self::STATUS_ONLINE,
-                        "width" => $creative_assets->width,
-                        "height" => $creative_assets->height,
-                        "type" => 'banner',
-                        "assetUrl" => $creative_assets->asset_url,
-            );
-
-
-            //convert campaign array to json format
-            $creative_json = json_encode($creative_array);
-
-            //call sitescout API
-            //return value : creative OBJECT
-            $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $creative_json);
-
-            //update campaignID in sitesouct into fd_campaign table
-            //$count = 1
-            $count = $creative_assets->updateByPk(
-                    $creative_assets->id, array('sitescout_creative_id' => $response->creativeId));
-        }
-
-        return $response;
+        $i = 0;
+        $allGeoRule = array(array());
+        
+        foreach ($selectedRegions as $myRegion) {
+            if ($myRegion->type == 'COUNTRY') {
+                $GeoRule = array(
+                    "countryCode" => $myRegion->code,
+                );
+            } elseif ($myRegion->type == 'REGION') {
+                $country = Region::model()->findByPk($myRegion->parent_id);
+                $GeoRule = array(
+                    "countryCode" => $country->code,
+                    "region" => $myRegion->code,
+                );
+            }  elseif ($myRegion->type == 'CITY') {
+                $region = Region::model()->findByPk($myRegion->parent_id);
+                $country = Region::model()->findByPk($region->parent_id);
+                $GeoRule = array(
+                    "countryCode" => $country->code,
+                    "region" => $region->code,
+                    "city" => $myRegion->code,
+                );
+            }; 
+       
+            $allGeoRule[$i] = $GeoRule;
+            $i= $i+1;
+        };  
+               
+        //convert campaign array to json format
+          $allGeoRule_json = json_encode($allGeoRule);
+         
+          //call sitescout API
+          $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $allGeoRule_json);
+        
     }
 
     /**
@@ -690,7 +689,7 @@ class SiteScoutAPI {
                     )
             );
             $site_rule_count = 0;
-            
+
             foreach ($site_rule as $site_rules) {
                 $campaign_site_rule = new CampaignSiteRule;
                 $campaign_site_rule->campaign_id = $campaign->id;
@@ -715,26 +714,25 @@ class SiteScoutAPI {
                 //return value :  OBJECT
                 $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $campaign_site_rule_json);
 
-               // $returnValue = (array) $response;
+                // $returnValue = (array) $response;
 
                 if (isset($response->ruleId)) {
                     $site_rule_count = $site_rule_count + 1;
-                    
+
                     $campaign_site_rule->save();
-                    
+
                     $count = $campaign_site_rule->updateByPk(
                             $campaign_site_rule->id, array('status' => $response->reviewStatus,
                         'sitescout_rule_id' => $response->ruleId,
                         'sitescout_rule_link' => $response->links[0]->href
                     ));
                 }
-                
+
                 //for each creative, randomly assign 10 site
-                if ($site_rule_count==10)
+                if ($site_rule_count == 10)
                     break;
             }
         }
-       
     }
 
     /**

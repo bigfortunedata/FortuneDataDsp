@@ -120,12 +120,14 @@ class AdminCampaignController extends Controller {
                 //1. create a basic campaign 
                 //2.& 3 upload creative and assign creative to campaign
                 //4&5 set page positiona and site rule
+                //6 add geo targeting
                 //set campaign status to its ONLINE 
                 $response = $this->siteScoutApi->createCampaign($model->id);
                 $this->siteScoutApi->uploadAllCreative($model->id);
                 $this->siteScoutApi->addAllCreative($model->id);
                 $this->siteScoutApi->setPagePosition($model->id);
                 $this->siteScoutApi->addSiteRule($model->id);
+                $this->siteScoutApi->addSelectedRegions($model->id);
                 //Campaign only can be set online as it has both creatives and inventory sources
                 //if the orignal campaign status is online, sitescout api set its default status to offline
                 //we manually set it status back to ONLINE
