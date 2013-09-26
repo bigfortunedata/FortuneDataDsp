@@ -127,7 +127,7 @@ class AdminCampaignController extends Controller {
                 $this->siteScoutApi->addAllCreative($model->id);
                 $this->siteScoutApi->setPagePosition($model->id);
                 $this->siteScoutApi->addSiteRule($model->id);
-                $this->siteScoutApi->addSelectedRegions($model->id);
+                $this->siteScoutApi->addAllGeoRule($model->id);
                 //Campaign only can be set online as it has both creatives and inventory sources
                 //if the orignal campaign status is online, sitescout api set its default status to offline
                 //we manually set it status back to ONLINE
