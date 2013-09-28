@@ -91,7 +91,6 @@ class Creative extends FortuneDataActiveRecord
 		// will receive user inputs.
 		return array(
 			array('user_id, review_status_id, width, height, type_id, vendor_id, expanding_direction_id, create_user_id, update_user_id, status_id', 'numerical', 'integerOnly'=>true),
-			array('label, vault_path, asset_url, code, preview_url', 'length', 'max'=>45),
 			array('create_time, update_time', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.

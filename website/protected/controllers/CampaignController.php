@@ -205,6 +205,9 @@ class CampaignController extends Controller
 				'condition'=>'user_id=:userId AND status_id!=:archivedId',
 				'params'=>array(':userId'=>Yii::app()->user->id, ':archivedId'=>3),
 			),
+            'pagination' => array(
+                'pageSize' => 100,
+            ),
 		));
 		
 		$this->render('index',array(

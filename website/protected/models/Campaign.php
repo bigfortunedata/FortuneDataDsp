@@ -136,7 +136,7 @@ class Campaign extends FortuneDataActiveRecord {
             array('budget_ede', 'length', 'max' => 10),
             array('create_time, update_time', 'safe'),
             array('name', 'unique', 'criteria' => array(
-                    'condition' => 'user_id=:userId',
+                    'condition' => 'user_id=:userId and status_id!=3',
                     'params' => array(':userId' => Yii::app()->user->id),
                 )),
             array(
