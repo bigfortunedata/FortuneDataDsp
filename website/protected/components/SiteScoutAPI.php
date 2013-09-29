@@ -478,7 +478,7 @@ class SiteScoutAPI {
                 //build the creative body array
                 $creative_array =
                         array(
-                            "label" => 'API TESTING' . '-' . time() . '-' . rand(1, 1000),
+                            "label" => $creative_assets->id . '-' . time() . '-' . rand(1, 1000),
                             "status" => Utility::GetStatusCode($creative_assets->status_id),
                             "width" => $creative_assets->width,
                             "height" => $creative_assets->height,
@@ -503,6 +503,7 @@ class SiteScoutAPI {
                 //$count = 1
                 $count = $creative_assets->updateByPk(
                         $creative_assets->id, array('sitescout_creative_id' => $response->creativeId,
+                    'label' => $response->label,
                     'width' => $response->width,
                     'height' => $response->height,
                     'status_id' => Utility::GetStatusId($response->status),
@@ -584,7 +585,7 @@ class SiteScoutAPI {
         $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id . '/targeting/geo';
         $i = 0;
         $allGeoRule = array(array());
-        
+
         foreach ($selectedRegions as $myRegion) {
             if ($myRegion->type == 'COUNTRY') {
                 $GeoRule = array(
@@ -596,7 +597,7 @@ class SiteScoutAPI {
                     "countryCode" => $country->code,
                     "region" => $myRegion->code,
                 );
-            }  elseif ($myRegion->type == 'CITY') {
+            } elseif ($myRegion->type == 'CITY') {
                 $region = Region::model()->findByPk($myRegion->parent_id);
                 $country = Region::model()->findByPk($region->parent_id);
                 $GeoRule = array(
@@ -604,18 +605,17 @@ class SiteScoutAPI {
                     "region" => $region->code,
                     "city" => $myRegion->code,
                 );
-            }; 
-       
+            };
+
             $allGeoRule[$i] = $GeoRule;
-            $i= $i+1;
-        };  
-               
+            $i = $i + 1;
+        };
+
         //convert campaign array to json format
-          $allGeoRule_json = json_encode($allGeoRule);
-         
-          //call sitescout API
-          $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $allGeoRule_json);
-        
+        $allGeoRule_json = json_encode($allGeoRule);
+
+        //call sitescout API
+        $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $allGeoRule_json);
     }
 
     /**
@@ -893,6 +893,67 @@ class SiteScoutAPI {
             if (!isset($count)) {
                 throw new EHttpClientException(
                 Yii::t('SiteScoutAPI', 'updateCampaignOnlineStaus: Failed to update campaign filed, campaign id:' . $id));
+            }
+        }
+
+        return $response;
+    }
+
+    /**
+     * updateCreativeOnlineStaus
+     *  
+     * Update a Creative online/offline status
+     * Path: /advertisers/{advertiserId}/campaigns/{campaignId}/creatives/{creativeId}
+     * HTTP Method: PUT
+     * parameter: Creative ID, Status Id
+     */
+    public function updateCreativeOnlineStaus($id, $status_id) {
+        $headerParameters = array(
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
+
+        //get the campaign informaton from database
+        $creative = Creative::model()->findByPk($id);
+        $response = new stdClass;
+        $campaignId = $creative->campaigns[0]->sitescout_campaign_id;
+
+        if (!isset($creative->id)) {
+            throw new EHttpClientException(
+            Yii::t('SiteScoutAPI', 'updateCreativeOnlineStaus: Failed to get the creative and campaign record from database, Please contact system adminstrator. '));
+        }
+
+        //only udate creative has been uploaded
+        if (isset($creative->sitescout_creative_id)) {
+            $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaignId . '/creatives/' . $creative->sitescout_creative_id;
+            //build the creative body array
+            $creative_array =
+                    array(
+                        "creativeId" => $creative->sitescout_creative_id,
+                        "label" => $creative->label,
+                        "status" => Utility::GetStatusCode($status_id),
+            );
+            //convert campaign array to json format
+            $creative_json = json_encode($creative_array);
+
+            //call sitescout API
+            //return value : CAMPAIGN OBJECT
+            $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $creative_json);
+
+            if (isset($response->errorCode)) {
+                throw new EHttpClientException(
+                Yii::t('SiteScoutAPI', 'SiteScout updateCampaignOnlineStaus API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
+            }
+
+            //update status into fd_campaign table
+            //$count = 1
+            $count = $creative->updateByPk(
+                    $creative->id, array('status_id' => Utility::GetStatusId($response->status),
+                'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+
+            if (!isset($count)) {
+                throw new EHttpClientException(
+                Yii::t('SiteScoutAPI', 'updateCreativeOnlineStaus: Failed to update campaign filed, creative id:' . $id));
             }
         }
 
