@@ -6,7 +6,7 @@
 // CWebApplication properties can be configured here.
 return array(
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
-    'name' => 'My Web Application',
+    'name' => 'Fortune Data: Self-Serve Advertising Platform',
     //'theme'=>'abound',
     'theme' => 'bootstrap',
     'aliases' => array(
@@ -156,6 +156,7 @@ return array(
                 array(
                     'class' => 'CFileLogRoute',
                     'levels' => 'error',
+                     'logFile' => 'errorMessages.log',
                 ),
                 array(
                     'class' => 'CFileLogRoute',
@@ -163,8 +164,10 @@ return array(
                     'logFile' => 'infoMessages.log',
                 ),
                 array(
-                    'class' => 'CWebLogRoute',
+                   // 'class' => 'CWebLogRoute',
+                    'class' => 'CFileLogRoute', 
                     'levels' => 'warning',
+                     'logFile' => 'warningMessages.log',
                 ),
             // uncomment the following to show log messages on web pages
             /*
