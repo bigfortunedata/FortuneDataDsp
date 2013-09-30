@@ -140,5 +140,37 @@ if ($model->isNewRecord) {
 	</div>
 
 <?php $this->endWidget(); ?>
+        <p><b>Supported Ad Image File:</b><br>
+File Size <= 120K<br>
+Image Size: 300×250, 728×90, 160×600, 468×60, 120×600, 300×50 (mobile), and 320×50 (mobile).<br><br> 
 
+<b>Denied Vertical/Ad Types:</b><br>
+	*Dating<br>
+	*Download/Toolbar<br>
+	*E-Cigs(ElectronicCigarettes)<br>
+	*Skin/Wrinkle<br>
+	*Diet/Weightloss<br>
+	*Relationships & Relationship Advice<br>
+	*Bizopp/Work-From-Home<br>
+	*Gambling<br>
+	*Teeth/TeethWhitening<br>
+	*Dating/Personals<br>
+	*Religion, Faith & Spirituality<br>
+	*SocialNetworking<br>
+	*Sexual/Reproductive Health<br>
+	*Restricted (Alchohol/Tobacco/Gambling/etc.)<br>
+	*Alchohol<br>
+	*Smileys, Cursors, Wallpaper, Screensavers<br>
+	*PennyAuction<br>
+	*Sweepstakes, Freebies, Giveways<br>
+	*Military<br>
+	*Politics<br>
+	*Astrology/PsychicReadings<br>
+	*Firearms & Weapons<br>
+	*Tobacco & Smoking<br>
+	*BellyFat<br>
+	*Expandable-Automatic<br>
+	*Audio-Automatic<br>
+	*Adult/Provocative/Suggestive<br>
+	*SystemWarning/WindowsBox</p>
 </div><!-- form -->
