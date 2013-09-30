@@ -1134,7 +1134,7 @@ class SiteScoutAPI {
         //build the creative body array
         $creative_array =
                 array(
-                    "label" => $creative_asset->label . '-' . time() . '-' . rand(1, 1000) . '---API TESTING',
+                    "label" => $creative_asset->id . '-' . time() . '-' . rand(1, 1000),
                     "status" => Utility::GetStatusCode($creative_asset->status_id),
                     "width" => $creative_asset->width,
                     "height" => $creative_asset->height,
@@ -1159,6 +1159,7 @@ class SiteScoutAPI {
         //$count = 1
         $count = $creative_asset->updateByPk(
                 $creative_asset->id, array('sitescout_creative_id' => $response->creativeId,
+            'label' => $response->label,
             'width' => $response->width,
             'height' => $response->height,
             'status_id' => Utility::GetStatusId($response->status),

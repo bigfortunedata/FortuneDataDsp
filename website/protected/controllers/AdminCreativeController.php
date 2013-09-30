@@ -202,8 +202,8 @@ class AdminCreativeController extends Controller {
                 $this->siteScoutApi->uploadOneCreative($id);
                 $this->siteScoutApi->addOneCreative($id);
                 $successMessage = "The creative is pending review.";
-                $model->review_status_id = 5;
-                $model->save();
+               // $model->review_status_id = 5;
+               // $model->save();
             }
         }
 
