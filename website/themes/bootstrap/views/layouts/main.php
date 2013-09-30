@@ -47,6 +47,23 @@
                         </head>
 
                         <body>
+                            <!-- Start of StatCounter Code for Default Guide -->
+                            <script type="text/javascript">
+                                var sc_project = 9286333;
+                                var sc_invisible = 1;
+                                var sc_security = "a82cac4a";
+                                var scJsHost = (("https:" == document.location.protocol) ?
+                                        "https://secure." : "http://www.");
+                                document.write("<sc" + "ript type='text/javascript' src='" +
+                                        scJsHost +
+                                        "statcounter.com/counter/counter.js'></" + "script>");
+                            </script>
+                            <noscript><div class="statcounter"><a title="web analytics"
+                                                                  href="http://statcounter.com/" target="_blank"><img
+                                            class="statcounter"
+                                            src="http://c.statcounter.com/9286333/0/a82cac4a/1/"
+                                            alt="web analytics"></a></div></noscript>
+                            <!-- End of StatCounter Code for Default Guide -->
                             <section id="navigation-main">   
                                 <!-- Require the navigation -->
                                 <div class="navbar navbar-inverse navbar-fixed-top">

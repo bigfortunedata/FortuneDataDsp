@@ -7,7 +7,8 @@
         
 		  <?php 
 		    $menuItems = array(
-			    array('label'=>'<i class="icon icon-home"></i>  Home <span class="label label-info pull-right">BETA</span>', 'url'=>array('/site/index'),'itemOptions'=>array('class'=>'')), 
+			    array('label'=>'<i class="icon icon-home"></i>  Home ', 'url'=>array('/site/index'),'itemOptions'=>array('class'=>'')), 
+                        //<span class="label label-info pull-right">BETA</span>
                 array('label'=>'<i class="icon icon-star"></i> Manage Campaign', 'url'=>array('/campaign/index' )),
                 array('label'=>'<i class="icon icon-pencil"></i>  Create Campaign', 'url'=>array('/campaign/create' )),
 				//array('label'=>'<i class="icon icon-search"></i> About this theme <span class="label label-important pull-right">HOT</span>', 'url'=>'http://www.webapplicationthemes.com/abound-yii-framework-theme/'),
