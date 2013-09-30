@@ -35,7 +35,7 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'default_bid'); ?>
+		<?php echo $form->labelEx($model,'default_bid').Utility::GetBidRange().'<br>'; ?>
 		<?php echo $form->textField($model,'default_bid'); ?>
 		<?php echo $form->error($model,'default_bid'); ?>
 	</div>
