@@ -74,7 +74,7 @@
                                                         array('label' => 'Home', 'url' => array('/site/index')),
                                                         array('label' => 'Campaigns', 'url' => array('/campaign/index'), 'visible' => !Yii::app()->user->isGuest),
                                                         array('label' => 'Admin', 'url' => array('/adminCampaign/index'), 'visible' => Yii::app()->user->isAdmin()), // array('label' => 'My Account', 'url' => array('/profile/profile/update'), 'visible' => !Yii::app()->user->isGuest),
-                                                        array('label' => 'About Us', 'url' => ('http://www.bigfortunedata.com'), 'visible' => Yii::app()->user->isGuest),
+                                                        array('label' => 'About Us', 'url' => ('http://www.bigfortunedata.com'),),
                                                         array('label' => 'Contact', 'url' => array('/site/contact')),
                                                         // array('label'=>'Terms', 'url'=>array(Yii::app()->baseUrl . '/protected/views/site/pages/FORTUNEDATA_TERMS_AND_CONDITIONS.pdf'), 'linkOptions' => array('target'=>'_blank'),'visible'=>!Yii::app()->user->isGuest),
                                                         array('label' => 'Log in', 'url' => array('/user/auth'), 'visible' => Yii::app()->user->isGuest),
