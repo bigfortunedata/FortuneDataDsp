@@ -113,7 +113,7 @@ class Campaign extends FortuneDataActiveRecord {
      * Set default values for the model
      */
     public function setDefaultValues() {
-        $this->fc_impressions = 0;
+        $this->fc_impressions = 5;
         $this->fc_period_in_hours = 24;
         $this->budget_type_id = 1;
         $this->budget_ede = 1;
@@ -131,7 +131,6 @@ class Campaign extends FortuneDataActiveRecord {
             array('user_id, status_id, review_status_id, budget_type_id, fc_impressions, fc_period_in_hours, fc_type_id, conversion_audience, click_audience, create_user_id, update_user_id', 'numerical', 'integerOnly' => true),
             array('budget_amount', 'numerical', 'min' => 1.0),
             array('default_bid', 'numerical', 'min' => 0.1),
-            array('location', 'length', 'max' => 300),
             array('name, click_url', 'length', 'max' => 45),
             array('budget_ede', 'length', 'max' => 10),
             array('create_time, update_time', 'safe'),
@@ -389,6 +388,21 @@ class Campaign extends FortuneDataActiveRecord {
     }
 
     /**
+     * Get the selected regions
+     * @return the selected regions
+     */
+    public function getSelectedRegions($selectedRegions) {
+        $allRegions = Region::model()->findAll();
+        $selectedRegionsArray = array();
+        foreach ($allRegions as $region) {
+            if (isset($selectedRegions['region_' . $region->id])) {
+                $selectedRegionsArray[] = $region->id;
+            }
+        }
+        return implode(',', $selectedRegionsArray);
+    }
+
+    /**
      * Whether the campaign is online
      */
     public function getIsOnline() {
@@ -421,7 +435,8 @@ class Campaign extends FortuneDataActiveRecord {
                 }
             }
         } else {
-            $checked = 'checked';
+	        if ($node->selected  == 1)
+                $checked = 'checked';
         }
 
         if (!$rootNode) {

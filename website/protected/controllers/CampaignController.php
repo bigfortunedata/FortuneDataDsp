@@ -89,6 +89,7 @@ class CampaignController extends Controller
 		if(isset($_POST['Campaign']))
 		{
 			$model->attributes=$_POST['Campaign'];
+			$model->location = $model->getSelectedRegions($_POST['Campaign']);
 			if($model->save()) {
 				$creative->attributes=$_POST['Campaign'];
 				$rnd = rand(0,9999);  // generate random number between 0-9999
@@ -152,6 +153,7 @@ class CampaignController extends Controller
 		if(isset($_POST['Campaign']))
 		{
 			$model->attributes=$_POST['Campaign'];
+			$model->location = $model->getSelectedRegions($_POST['Campaign']);
 			if($model->save()) {
 				$model->saveRegions($_POST['Campaign']);
 				
