@@ -127,7 +127,7 @@ class Campaign extends FortuneDataActiveRecord {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
-            array('name, default_bid, click_url, budget_amount, start_datetime, end_datetime, category_id', 'required'),
+            array('name, default_bid, click_url, budget_amount, start_datetime, end_datetime, category_id, location', 'required'),
             array('user_id, status_id, review_status_id, budget_type_id, fc_impressions, fc_period_in_hours, fc_type_id, conversion_audience, click_audience, create_user_id, update_user_id', 'numerical', 'integerOnly' => true),
             array('budget_amount', 'numerical', 'min' => 1.0),
             array('default_bid', 'numerical', 'min' => 0.1),
@@ -400,6 +400,64 @@ class Campaign extends FortuneDataActiveRecord {
             }
         }
         return implode(',', $selectedRegionsArray);
+    }
+
+
+    /**
+     *   allChildRegionsSelected
+     *
+     * Check if all the child regions (including itself) are selected.
+     */
+    private function allChildRegionsSelected($campaign, $node) {
+        $regionSelected = false;
+        foreach ($campaign->regions as $myRegion) {
+            if ($node->id === $myRegion->id) {
+                $regionSelected = true;
+            }
+        }
+        if ($regionSelected == false) {
+            return false;
+        }
+
+        foreach ($node->children as $childRegion) {
+            if (!$this->allChildRegionsSelected($campaign, $childRegion)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     *   addSelectedRegions
+     *
+     * Add all selection regions.
+     * parameter: $campaign The campaign object
+     *            $node The region node
+     *            $selectedRegions The array of selected regions
+     */
+    private function addSelectedRegions($campaign, $node, &$selectedRegions) {
+        if ($this->allChildRegionsSelected($campaign, $node)) {
+            $selectedRegions[] = $node;
+        } else {
+            foreach ($node->children as $childRegion) {
+                $this->addSelectedRegions($campaign, $childRegion, $selectedRegions);
+            }
+        }
+    }
+
+    /**
+     *   getAllSelectedRegions
+     *
+     *   Get all the selectedregions
+     */
+    public function getAllSelectedRegions() {
+        $selectedRegions = array();
+        $root = Region::model()->findByPk(1);
+        foreach ($root->children as $myRegion) {
+            $this->addSelectedRegions($this, $myRegion, $selectedRegions);
+        }
+        return $selectedRegions;
     }
 
     /**

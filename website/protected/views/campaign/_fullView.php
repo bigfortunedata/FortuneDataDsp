@@ -36,5 +36,14 @@
 	<b><?php echo CHtml::encode($data->getAttributeLabel('end_datetime')); ?>:</b>
 	<?php echo CHtml::encode($data->end_datetime); ?>
 	<br />
-
+	
+	<b><?php echo CHtml::encode($data->getAttributeLabel('locations')); ?>:</b> <br />
+	<select multiple="multiple" disabled>
+	<?php
+	    $selectedRegions = $data->getAllSelectedRegions();
+	    foreach ($selectedRegions as $region) {
+		    echo "<option>" . $region->name . "</option>\n";
+	    }
+	?>
+	</select>
 </div>
