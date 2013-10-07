@@ -366,7 +366,8 @@ class SiteScoutAPI {
 
         //convert campaign array to json format
         $campaign_json = json_encode($campaign_array);
-
+        var_dump($campaign_json);
+        var_dump('/br');
         //call sitescout API
         //return value : CAMPAIGN OBJECT
         $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $campaign_json);
@@ -387,7 +388,8 @@ class SiteScoutAPI {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'createCampaign: Failed to update campaign sitescout_campaign_id filed, campaign id:' . $id));
         }
-
+        var_dump($response);
+        var_dump('/br');
         return $response;
     }
 
@@ -861,15 +863,49 @@ class SiteScoutAPI {
         if (isset($campaign->sitescout_campaign_id)) {
             $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id;
 
+            if ($campaign->fc_impressions == 0) {
 //build the campaign body array
-            $campaign_array =
-                    array(
-                        "campaignId" => $campaign->sitescout_campaign_id,
-                        "name" => $campaign->name,
-                        "status" => Utility::GetStatusCode($status_id),
-                        "defaultBid" => $campaign->default_bid,
-                        "clickUrl" => $campaign->click_url,
-            );
+                $campaign_array =
+                        array(
+                            "campaignId" => $campaign->sitescout_campaign_id,
+                            "name" => $campaign->name,
+                            "status" => Utility::GetStatusCode($status_id),
+                            "defaultBid" => $campaign->default_bid,
+                            "clickUrl" => $campaign->click_url,
+                            "budget" => array(
+                                "amount" => $campaign->budget_amount,
+                                "type" => 'daily',
+                                "evenDeliveryEnabled" => 'true'
+                            ),
+                            "flightDates" => array(
+                                "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                                "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
+                            )
+                );
+            } else {//build the campaign body array
+                $campaign_array =
+                        array(
+                            "campaignId" => $campaign->sitescout_campaign_id,
+                            "name" => $campaign->name,
+                            "status" => Utility::GetStatusCode($status_id),
+                            "defaultBid" => $campaign->default_bid,
+                            "clickUrl" => $campaign->click_url,
+                            "budget" => array(
+                                "amount" => $campaign->budget_amount,
+                                "type" => 'daily',
+                                "evenDeliveryEnabled" => 'true'
+                            ),
+                            "frequencyCapping" => array(
+                                "impressions" => $campaign->fc_impressions,
+                                "periodInHours" => $campaign->fc_period_in_hours,
+                                "type" => 'campaign'
+                            ),
+                            "flightDates" => array(
+                                "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                                "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
+                            )
+                );
+            };
 
 
             //convert campaign array to json format
@@ -932,6 +968,10 @@ class SiteScoutAPI {
                         "creativeId" => $creative->sitescout_creative_id,
                         "label" => $creative->label,
                         "status" => Utility::GetStatusCode($status_id),
+                        "width" => $creative->width,
+                        "height" => $creative->height,
+                        "type" => 'banner',
+                        "assetUrl" => $creative->asset_url,
             );
             //convert campaign array to json format
             $creative_json = json_encode($creative_array);
