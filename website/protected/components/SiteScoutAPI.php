@@ -386,7 +386,7 @@ class SiteScoutAPI {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'createCampaign: Failed to update campaign sitescout_campaign_id filed, campaign id:' . $id));
         }
- 
+
         return $response;
     }
 
@@ -701,18 +701,17 @@ class SiteScoutAPI {
                 $campaign_site_rule_array =
                         array(
                             "siteRef" => $site_rules->sitescout_site_id,
-                            "dimensions" => $creative_assets->width . "x" . $creative_assets->height,
+                         //   "dimensions" => $creative_assets->width . "x" . $creative_assets->height,
                             "pagePosition" => "above_the_fold",
                             "bid" => $campaign_site_rule->bid,
-                            "status" => "online",
-                            "reviewStatus" => "eligible",
+                             "status" => "online",
+                         //   "reviewStatus" => "eligible",
                 );
                 //convert campaign_site_rule array to json format
                 $campaign_site_rule_json = json_encode($campaign_site_rule_array);
                 //call sitescout API
                 //return value :  OBJECT
                 $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $campaign_site_rule_json);
-
                 // $returnValue = (array) $response;
 
                 if (isset($response->ruleId)) {
@@ -721,7 +720,8 @@ class SiteScoutAPI {
                     $campaign_site_rule->save();
 
                     $count = $campaign_site_rule->updateByPk(
-                            $campaign_site_rule->id, array('status' => $response->reviewStatus,
+                            $campaign_site_rule->id, array('status_id' => Utility::GetStatusId($response->status),
+                        'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus),
                         'sitescout_rule_id' => $response->ruleId,
                         'sitescout_rule_link' => $response->links[0]->href
                     ));
@@ -730,6 +730,56 @@ class SiteScoutAPI {
                 //for each creative, randomly assign 10 site
                 if ($site_rule_count == 10)
                     break;
+            }
+        }
+    }
+
+    /**
+     *   removeSiteRule
+     *
+     * Remove   Site Rule / Update a Site Rule
+     * Path: /advertisers/{advertiserId}/campaigns/{campaignId}/sources/siteRules/{ruleId}
+     * HTTP Method: PUT
+     * parameter: Campaign ID
+     */
+    public function removeSiteRule($id) {
+
+        $headerParameters = array(
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
+
+        //get the campaign informaton from database
+        $campaign_site_rule = CampaignSiteRule::model()->findAll(array('condition' => 'campaign_id=:campaign_id', 'params' => array(':campaign_id' => $id)));
+
+        foreach ($campaign_site_rule as $campaign_site_rules) {
+
+            //get the campaign informaton from database
+            $campaign = Campaign::model()->findByPk($id);
+
+            $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaign->sitescout_campaign_id . '/sources/siteRules';
+
+            $path = $path . '/' . $campaign_site_rules->sitescout_rule_id;
+
+            $campaign_site_rule_array =
+                    array(
+                        "status" => "archived",
+            );
+            //convert campaign_site_rule array to json format
+            $campaign_site_rule_json = json_encode($campaign_site_rule_array);
+            //call sitescout API
+            //return value :  OBJECT
+            $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $campaign_site_rule_json);
+
+            if (isset($response->errorCode)) {
+                throw new EHttpClientException(
+                Yii::t('SiteScoutAPI', 'SiteScout removeSiteRule API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
+            }
+
+            if (isset($response->status)) {
+                $count = $campaign_site_rules->updateByPk(
+                        $campaign_site_rules->id, array('status_id' => Utility::GetStatusId($response->status),
+                    'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
             }
         }
     }
