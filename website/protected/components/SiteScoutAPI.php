@@ -366,8 +366,6 @@ class SiteScoutAPI {
 
         //convert campaign array to json format
         $campaign_json = json_encode($campaign_array);
-        var_dump($campaign_json);
-        var_dump('/br');
         //call sitescout API
         //return value : CAMPAIGN OBJECT
         $response = $this->SiteScoutApiCall($path, EHttpClient::POST, null, null, $headerParameters, $campaign_json);
@@ -388,8 +386,7 @@ class SiteScoutAPI {
             throw new EHttpClientException(
             Yii::t('SiteScoutAPI', 'createCampaign: Failed to update campaign sitescout_campaign_id filed, campaign id:' . $id));
         }
-        var_dump($response);
-        var_dump('/br');
+ 
         return $response;
     }
 
