@@ -122,8 +122,8 @@ if ($model->isNewRecord) {
 		<?php 
 		$this->beginWidget('ext.ECheckBoxTree.ECheckBoxTree', array(
 			'options'=>array(
-				'collapseImage'=>'images/downArrow.gif',
-			    'expandImage'=>'images/rightArrow.gif',
+				'collapseImage'=>'/images/downArrow.gif',
+			    'expandImage'=>'/images/rightArrow.gif',
 			    'collapsed'=>true,
 			    'initializeChecked'=>'collapsed',
 			    'initializeUnchecked'=>'collapsed',
