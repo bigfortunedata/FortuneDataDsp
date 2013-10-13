@@ -701,11 +701,11 @@ class SiteScoutAPI {
                 $campaign_site_rule_array =
                         array(
                             "siteRef" => $site_rules->sitescout_site_id,
-                         //   "dimensions" => $creative_assets->width . "x" . $creative_assets->height,
+                            //   "dimensions" => $creative_assets->width . "x" . $creative_assets->height,
                             "pagePosition" => "above_the_fold",
                             "bid" => $campaign_site_rule->bid,
-                             "status" => "online",
-                         //   "reviewStatus" => "eligible",
+                            "status" => "online",
+                        //   "reviewStatus" => "eligible",
                 );
                 //convert campaign_site_rule array to json format
                 $campaign_site_rule_json = json_encode($campaign_site_rule_array);
@@ -1257,6 +1257,325 @@ class SiteScoutAPI {
             Yii::t('SiteScoutAPI', 'addOneCreative: Failed to update creative sitescout_creative_id, width and height filed, campaign id:' . $id . '  creative name:' . $creative_assets->image));
         }
         return $response;
+    }
+
+    /**
+     *   retrieveStatCampSite
+     *
+     * Retrieve Statistics for a Campaign, per Site
+     * Path: /advertisers/{advertiserId}/campaigns/{campaignId}/stats/sites
+     * HTTP Method: GET
+     * Accept: application/json and text/csv
+     */
+    public function retrieveStatCampSite($campaignDate = NULL) {
+
+        $return = 0;
+
+
+        if (isset($campaignDate)) {
+            $dateFrom = $campaignDate;
+            $batch_type = 'DAILY';
+        } else {
+            $dateFrom = date("Ymd");
+            $batch_type = 'HOURLY';
+            //  $campaign = Campaign::model()->findAll(array('condition' => 'status_id=:status_id AND review_status_id=:review_status_id AND  sitescout_campaign_id IS NOT NULL', 'params' => array(':status_id' => 2, ':review_status_id' => 3)));
+        };
+
+        //get the eligible campaign records from database
+        //for darily batch, we return all online campaign, and offline campaign but updated yesterday
+        //for hourly batch, we return all online campaign, and offline campaign but updated yesterday
+
+        $dateTo = $dateFrom;
+        $campaign = Campaign::model()->findAll(array('condition' => '(status_id=:status_id AND review_status_id=:review_status_id) 
+                                   OR (DATE_FORMAT(update_time,"%Y%m%d")=:update_time AND status_id!=:status_id)
+                                   AND  sitescout_campaign_id IS NOT NULL',
+            'params' => array(':status_id' => 2, ':review_status_id' => 3, ':update_time' => $dateFrom)));
+
+        $headerParameters = array(
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
+
+        foreach ($campaign as $campaigns) {
+            
+            
+            $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaigns->sitescout_campaign_id . '/stats';
+
+             //get the all the campain stats as of today
+            $stats_array =
+                    array(
+                        "dateFrom" => '20131001',
+            );
+            $stats_json = json_encode($stats_array);
+
+            $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_json, null, $headerParameters, null);
+
+            if (isset($response->errorCode)) {
+
+                $message = $batch . '-' . $dateFrom . '-' . $campaigns->id . '-' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
+                Yii::log($message, 'error');
+                $return = $return + 1;
+            } else {
+
+                if (($response->entity->status = 'online') OR ($response->entity->status != 'online' AND $response->stats->totalSpend > 0)) {
+                    $campaignStatsSummary = CampaignStatsSummary::model()->findByAttributes(array('campaign_id' => $campaigns->id));
+
+                    if (isset($campaignStatsSummary->id)) {
+                        $campaignStatsSummary->updateByPk(
+                                $campaignStatsSummary->id, array(
+                            'campaign_id' => $campaigns->id,
+                            'sitescout_campaign_id' => $campaigns->sitescout_campaign_id,
+                            'status_id' => Utility::GetStatusId($response->entity->status),
+                            'defaultBid' => $response->entity->defaultBid,
+                            'impressionsBid' => $response->stats->impressionsBid,
+                            'impressionsWon' => $response->stats->impressionsWon,
+                            'effectiveCPM' => $response->stats->effectiveCPM,
+                            'auctionsSpend' => $response->stats->auctionsSpend,
+                            'clicks' => $response->stats->clicks,
+                            'clickthruRate' => $response->stats->clickthruRate,
+                            'costPerClick' => $response->stats->costPerClick,
+                            'offerClicks' => $response->stats->offerClicks,
+                            'offerClickthruRate' => $response->stats->offerClickthruRate,
+                            'conversions' => $response->stats->conversions,
+                            'conversionRate' => $response->stats->conversionRate,
+                            'viewthruConversions' => $response->stats->viewthruConversions,
+                            'profitPerClick' => $response->stats->profitPerClick,
+                            'costPerAcquisition' => $response->stats->costPerAcquisition,
+                            'revenuePerMille' => $response->stats->revenuePerMille,
+                            'revenue' => $response->stats->revenue,
+                            'totalEffectiveCPM' => $response->stats->totalEffectiveCPM,
+                            'totalSpend' => $response->stats->totalSpend,
+                            'dataEffectiveCPM' => $response->stats->dataEffectiveCPM,
+                            'dataSpend' => $response->stats->dataSpend,
+                            'update_time' => date('Y-m-d H:i:s'),
+                            'batch_type' => 'HOURLY'
+                        ));
+                    } else {
+                        $campaignStatsSummary = new CampaignStatsSummary;
+                        $campaignStatsSummary->campaign_id = $campaigns->id;
+                        $campaignStatsSummary->sitescout_campaign_id = $campaigns->sitescout_campaign_id;
+                        $campaignStatsSummary->status_id = Utility::GetStatusId($response->entity->status);
+                        $campaignStatsSummary->defaultBid = $response->entity->defaultBid;
+                        $campaignStatsSummary->impressionsBid = $response->stats->impressionsBid;
+                        $campaignStatsSummary->impressionsWon = $response->stats->impressionsWon;
+                        $campaignStatsSummary->effectiveCPM = $response->stats->effectiveCPM;
+                        $campaignStatsSummary->auctionsSpend = $response->stats->auctionsSpend;
+                        $campaignStatsSummary->clicks = $response->stats->clicks;
+                        $campaignStatsSummary->clickthruRate = $response->stats->clickthruRate;
+                        $campaignStatsSummary->costPerClick = $response->stats->costPerClick;
+                        $campaignStatsSummary->offerClicks = $response->stats->offerClicks;
+                        $campaignStatsSummary->offerClickthruRate = $response->stats->offerClickthruRate;
+                        $campaignStatsSummary->conversions = $response->stats->conversions;
+                        $campaignStatsSummary->conversionRate = $response->stats->conversionRate;
+                        $campaignStatsSummary->viewthruConversions = $response->stats->viewthruConversions;
+                        $campaignStatsSummary->profitPerClick = $response->stats->profitPerClick;
+                        $campaignStatsSummary->costPerAcquisition = $response->stats->costPerAcquisition;
+                        $campaignStatsSummary->revenuePerMille = $response->stats->revenuePerMille;
+                        $campaignStatsSummary->revenue = $response->stats->revenue;
+                        $campaignStatsSummary->totalEffectiveCPM = $response->stats->totalEffectiveCPM;
+                        $campaignStatsSummary->totalSpend = $response->stats->totalSpend;
+                        $campaignStatsSummary->dataEffectiveCPM = $response->stats->dataEffectiveCPM;
+                        $campaignStatsSummary->dataSpend = $response->stats->dataSpend;
+                        $campaignStatsSummary->update_time = date('Y-m-d H:i:s');
+                        $campaignStatsSummary->batch_type = 'HOURLY';
+                        $campaignStatsSummary->save();
+                    };
+
+                    //get TODAY  campain stats
+
+                    $stats_array =
+                            array(
+                                "dateFrom" => $dateFrom,
+                                "dateTo" => $dateFrom,
+                    );
+                    $stats_json = json_encode($stats_array);
+
+                    $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_json, null, $headerParameters, null);
+
+                    if (isset($response->errorCode)) {
+
+                        $message = $batch . '-' . $dateFrom . '-' . $campaigns->id . '-' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign daily stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
+                        Yii::log($message, 'error');
+                        $return = $return + 1;
+                    } else {
+
+                        $campaignStatsDaily = CampaignStatsDaily::model()->findByAttributes(array('campaign_id' => $campaigns->id,
+                            'campaign_date' => $dateFrom,
+                        ));
+
+                        if (isset($campaignStatsDaily->id)) {
+                            $campaignStatsDaily->updateByPk(
+                                    $campaignStatsDaily->id, array(
+                                'campaign_id' => $campaigns->id,
+                                'sitescout_campaign_id' => $campaigns->sitescout_campaign_id,
+                                'status_id' => Utility::GetStatusId($response->entity->status),
+                                'campaign_date' => $dateFrom,
+                                'defaultBid' => $response->entity->defaultBid,
+                                'impressionsBid' => $response->stats->impressionsBid,
+                                'impressionsWon' => $response->stats->impressionsWon,
+                                'effectiveCPM' => $response->stats->effectiveCPM,
+                                'auctionsSpend' => $response->stats->auctionsSpend,
+                                'clicks' => $response->stats->clicks,
+                                'clickthruRate' => $response->stats->clickthruRate,
+                                'costPerClick' => $response->stats->costPerClick,
+                                'offerClicks' => $response->stats->offerClicks,
+                                'offerClickthruRate' => $response->stats->offerClickthruRate,
+                                'conversions' => $response->stats->conversions,
+                                'conversionRate' => $response->stats->conversionRate,
+                                'viewthruConversions' => $response->stats->viewthruConversions,
+                                'profitPerClick' => $response->stats->profitPerClick,
+                                'costPerAcquisition' => $response->stats->costPerAcquisition,
+                                'revenuePerMille' => $response->stats->revenuePerMille,
+                                'revenue' => $response->stats->revenue,
+                                'totalEffectiveCPM' => $response->stats->totalEffectiveCPM,
+                                'totalSpend' => $response->stats->totalSpend,
+                                'dataEffectiveCPM' => $response->stats->dataEffectiveCPM,
+                                'dataSpend' => $response->stats->dataSpend,
+                                'update_time' => date('Y-m-d H:i:s'),
+                                'batch_type' => $batch_type,
+                            ));
+                        } else {
+                            $campaignStatsDaily = new CampaignStatsDaily;
+                            $campaignStatsDaily->campaign_stats_summary_id = $campaignStatsSummary->id;
+                            $campaignStatsDaily->campaign_id = $campaigns->id;
+                            $campaignStatsDaily->sitescout_campaign_id = $campaigns->sitescout_campaign_id;
+                            $campaignStatsDaily->status_id = Utility::GetStatusId($response->entity->status);
+                            $campaignStatsDaily->campaign_date = $dateFrom;
+                            $campaignStatsDaily->defaultBid = $response->entity->defaultBid;
+                            $campaignStatsDaily->impressionsBid = $response->stats->impressionsBid;
+                            $campaignStatsDaily->impressionsWon = $response->stats->impressionsWon;
+                            $campaignStatsDaily->effectiveCPM = $response->stats->effectiveCPM;
+                            $campaignStatsDaily->auctionsSpend = $response->stats->auctionsSpend;
+                            $campaignStatsDaily->clicks = $response->stats->clicks;
+                            $campaignStatsDaily->clickthruRate = $response->stats->clickthruRate;
+                            $campaignStatsDaily->costPerClick = $response->stats->costPerClick;
+                            $campaignStatsDaily->offerClicks = $response->stats->offerClicks;
+                            $campaignStatsDaily->offerClickthruRate = $response->stats->offerClickthruRate;
+                            $campaignStatsDaily->conversions = $response->stats->conversions;
+                            $campaignStatsDaily->conversionRate = $response->stats->conversionRate;
+                            $campaignStatsDaily->viewthruConversions = $response->stats->viewthruConversions;
+                            $campaignStatsDaily->profitPerClick = $response->stats->profitPerClick;
+                            $campaignStatsDaily->costPerAcquisition = $response->stats->costPerAcquisition;
+                            $campaignStatsDaily->revenuePerMille = $response->stats->revenuePerMille;
+                            $campaignStatsDaily->revenue = $response->stats->revenue;
+                            $campaignStatsDaily->totalEffectiveCPM = $response->stats->totalEffectiveCPM;
+                            $campaignStatsDaily->totalSpend = $response->stats->totalSpend;
+                            $campaignStatsDaily->dataEffectiveCPM = $response->stats->dataEffectiveCPM;
+                            $campaignStatsDaily->dataSpend = $response->stats->dataSpend;
+                            $campaignStatsDaily->create_time = date('Y-m-d H:i:s');
+                            $campaignStatsDaily->batch_type = $batch_type;
+                            $campaignStatsDaily->save();
+                        };
+
+
+                        //get TODAY  campain stats per site
+                        $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaigns->sitescout_campaign_id . '/stats/sites';
+
+                        $stats_array =
+                                array(
+                                    "dateFrom" => $dateFrom,
+                                    "dateTo" => $dateFrom,
+                                    "pageSize" => 100,
+                        );
+                        $stats_json = json_encode($stats_array);
+
+                        $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_json, null, $headerParameters, null);
+
+                        if (isset($response->errorCode)) {
+
+                            $message = $batch . '-' . $dateFrom . '-' . $campaigns->id . '-' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign per site daily stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
+                            Yii::log($message, 'error');
+                            $return = $return + 1;
+                        } else {
+                            foreach ($response->results as $results) {
+                                if (($results->stats->totalSpend) > 0) {
+
+                                    $campaignSiteStatsDaily = CampaignSiteStatsDaily::model()->findByAttributes(array('campaign_id' => $campaigns->id,
+                                        'campaign_date' => $dateFrom,
+                                        'ruleId' => $results->entity->ruleId,));
+
+                                    if (isset($campaignSiteStatsDaily->id)) {
+                                        $campaignSiteStatsDaily->updateByPk(
+                                                $campaignSiteStatsDaily->id, array(
+                                            'campaign_id' => $campaigns->id,
+                                            'sitescout_campaign_id' => $campaigns->sitescout_campaign_id,
+                                            'status_id' => Utility::GetStatusId($results->entity->status),
+                                            'campaign_date' => $dateFrom,
+                                            'review_status_id' => Utility::GetReviewStatusId($results->entity->reviewStatus),
+                                            'ruleId' => $results->entity->ruleId,
+                                            'siteRef' => $results->entity->siteRef,
+                                            'domain' => $results->entity->domain,
+                                            'campaign_stats_daily_id' => $campaignStatsDaily->id,
+                                            'defaultBid' => $results->entity->bid,
+                                            'impressionsBid' => $results->stats->impressionsBid,
+                                            'impressionsWon' => $results->stats->impressionsWon,
+                                            'effectiveCPM' => $results->stats->effectiveCPM,
+                                            'auctionsSpend' => $results->stats->auctionsSpend,
+                                            'clicks' => $results->stats->clicks,
+                                            'clickthruRate' => $results->stats->clickthruRate,
+                                            'costPerClick' => $results->stats->costPerClick,
+                                            'offerClicks' => $results->stats->offerClicks,
+                                            'offerClickthruRate' => $results->stats->offerClickthruRate,
+                                            'conversions' => $results->stats->conversions,
+                                            'conversionRate' => $results->stats->conversionRate,
+                                            'viewthruConversions' => $results->stats->viewthruConversions,
+                                            'profitPerClick' => $results->stats->profitPerClick,
+                                            'costPerAcquisition' => $results->stats->costPerAcquisition,
+                                            'revenuePerMille' => $results->stats->revenuePerMille,
+                                            'revenue' => $results->stats->revenue,
+                                            'totalEffectiveCPM' => $results->stats->totalEffectiveCPM,
+                                            'totalSpend' => $results->stats->totalSpend,
+                                            'dataEffectiveCPM' => $results->stats->dataEffectiveCPM,
+                                            'dataSpend' => $results->stats->dataSpend,
+                                            'update_time' => date('Y-m-d H:i:s'),
+                                            'batch_type' => $batch_type,
+                                        ));
+                                    } else {
+
+                                        $campaignSiteStatsDaily = new CampaignSiteStatsDaily;
+                                        $campaignSiteStatsDaily->campaign_stats_daily_id = $campaignStatsDaily->id;
+                                        $campaignSiteStatsDaily->campaign_id = $campaigns->id;
+                                        $campaignSiteStatsDaily->sitescout_campaign_id = $campaigns->sitescout_campaign_id;
+                                        $campaignSiteStatsDaily->status_id = Utility::GetStatusId($results->entity->status);
+                                        $campaignSiteStatsDaily->review_status_id = Utility::GetReviewStatusId($results->entity->reviewStatus);
+                                        $campaignSiteStatsDaily->campaign_date = $dateFrom;
+                                        $campaignSiteStatsDaily->ruleId = $results->entity->ruleId;
+                                        $campaignSiteStatsDaily->siteRef = $results->entity->siteRef;
+                                        $campaignSiteStatsDaily->domain = $results->entity->domain;
+                                        $campaignSiteStatsDaily->defaultBid = $results->entity->bid;
+                                        $campaignSiteStatsDaily->impressionsBid = $results->stats->impressionsBid;
+                                        $campaignSiteStatsDaily->impressionsWon = $results->stats->impressionsWon;
+                                        $campaignSiteStatsDaily->effectiveCPM = $results->stats->effectiveCPM;
+                                        $campaignSiteStatsDaily->auctionsSpend = $results->stats->auctionsSpend;
+                                        $campaignSiteStatsDaily->clicks = $results->stats->clicks;
+                                        $campaignSiteStatsDaily->clickthruRate = $results->stats->clickthruRate;
+                                        $campaignSiteStatsDaily->costPerClick = $results->stats->costPerClick;
+                                        $campaignSiteStatsDaily->offerClicks = $results->stats->offerClicks;
+                                        $campaignSiteStatsDaily->offerClickthruRate = $results->stats->offerClickthruRate;
+                                        $campaignSiteStatsDaily->conversions = $results->stats->conversions;
+                                        $campaignSiteStatsDaily->conversionRate = $results->stats->conversionRate;
+                                        $campaignStatsDaily->viewthruConversions = $results->stats->viewthruConversions;
+                                        $campaignStatsDaily->profitPerClick = $results->stats->profitPerClick;
+                                        $campaignSiteStatsDaily->costPerAcquisition = $results->stats->costPerAcquisition;
+                                        $campaignSiteStatsDaily->revenuePerMille = $results->stats->revenuePerMille;
+                                        $campaignSiteStatsDaily->revenue = $results->stats->revenue;
+                                        $campaignSiteStatsDaily->totalEffectiveCPM = $results->stats->totalEffectiveCPM;
+                                        $campaignSiteStatsDaily->totalSpend = $results->stats->totalSpend;
+                                        $campaignSiteStatsDaily->dataEffectiveCPM = $results->stats->dataEffectiveCPM;
+                                        $campaignSiteStatsDaily->dataSpend = $results->stats->dataSpend;
+                                        $campaignSiteStatsDaily->create_time = date('Y-m-d H:i:s');
+                                        $campaignSiteStatsDaily->batch_type = $batch_type;
+                                        $campaignSiteStatsDaily->save();
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+ 
+        return $return;
     }
 
 }
