@@ -215,6 +215,10 @@ class CronSiteScoutAPI {
             $client->setRawData($postBody, 'application/json');
         }
 
+
+        if (!empty($getParameters))
+            $client->setParameterGet($getParameters);
+
         if (!empty($postParameters))
             $client->setParameterPost($postParameters);
 
@@ -1113,22 +1117,22 @@ class CronSiteScoutAPI {
         foreach ($creative as $creatives) {
 
             if (isset($creatives->sitescout_creative_id)) {
-                if($creatives->campaigns[0]->status_id == 2){
-                $api_path = $path . $creatives->campaigns[0]->sitescout_campaign_id . '/creatives/' . $creatives->sitescout_creative_id;
-                //call sitescout API
-                //return value : CREATIVE OBJECT
-                $response = $this->SiteScoutApiCall($api_path, EHttpClient::GET, null, null, $headerParameters);
+                if ($creatives->campaigns[0]->status_id == 2) {
+                    $api_path = $path . $creatives->campaigns[0]->sitescout_campaign_id . '/creatives/' . $creatives->sitescout_creative_id;
+                    //call sitescout API
+                    //return value : CREATIVE OBJECT
+                    $response = $this->SiteScoutApiCall($api_path, EHttpClient::GET, null, null, $headerParameters);
 
-                if (isset($response->errorCode)) {
+                    if (isset($response->errorCode)) {
 
-                    $message = $creatives->id . '-' . $creatives->sitescout_creative_id . ' fetchCreativeStatus failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
-                    Yii::log($message, 'error');
-                    $return = $return + 1;
-                } else {
+                        $message = $creatives->id . '-' . $creatives->sitescout_creative_id . ' fetchCreativeStatus failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
+                        Yii::log($message, 'error');
+                        $return = $return + 1;
+                    } else {
 
-                    Creative::model()->updateByPk($creatives->id, array('status_id' => Utility::GetStatusId($response->status),
-                        'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
-                }
+                        Creative::model()->updateByPk($creatives->id, array('status_id' => Utility::GetStatusId($response->status),
+                            'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
+                    }
                 }
             }
         };
@@ -1147,7 +1151,6 @@ class CronSiteScoutAPI {
     public function retrieveStatCampSite($campaignDate = NULL) {
 
         $return = 0;
-
 
         if (isset($campaignDate)) {
             $dateFrom = $campaignDate;
@@ -1174,22 +1177,21 @@ class CronSiteScoutAPI {
             'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
 
         foreach ($campaign as $campaigns) {
-            
-            
+
             $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaigns->sitescout_campaign_id . '/stats';
 
-             //get the all the campain stats as of today
+            //get the all the campain stats as of today
             $stats_array =
                     array(
                         "dateFrom" => '20131001',
             );
-            $stats_json = json_encode($stats_array);
 
-            $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_json, null, $headerParameters, null);
+            $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_array, null, $headerParameters, null);
+
 
             if (isset($response->errorCode)) {
 
-                $message = $batch . '-' . $dateFrom . '-' . $campaigns->id . '-' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
+                $message = '[BATCH TYPE:]' . $batch_type . '-[DATE FROM:]' . $dateFrom . '-[CAMPAIGN ID:]' . $campaigns->id . '-[SITESCOUT CAMPAIGN ID:]' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
                 Yii::log($message, 'error');
                 $return = $return + 1;
             } else {
@@ -1259,19 +1261,16 @@ class CronSiteScoutAPI {
                     };
 
                     //get TODAY  campain stats
-
                     $stats_array =
                             array(
                                 "dateFrom" => $dateFrom,
                                 "dateTo" => $dateFrom,
                     );
-                    $stats_json = json_encode($stats_array);
-
-                    $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_json, null, $headerParameters, null);
+                    $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_array, null, $headerParameters, null);
 
                     if (isset($response->errorCode)) {
+                        $message = '[BATCH TYPE:]' . $batch_type . '-[DATE FROM:]' . $dateFrom . '-[CAMPAIGN ID:]' . $campaigns->id . '-[SITESCOUT CAMPAIGN ID:]' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign daily stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
 
-                        $message = $batch . '-' . $dateFrom . '-' . $campaigns->id . '-' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign daily stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
                         Yii::log($message, 'error');
                         $return = $return + 1;
                     } else {
@@ -1354,13 +1353,12 @@ class CronSiteScoutAPI {
                                     "dateTo" => $dateFrom,
                                     "pageSize" => 100,
                         );
-                        $stats_json = json_encode($stats_array);
 
-                        $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_json, null, $headerParameters, null);
+                        $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_array, null, $headerParameters, null);
 
                         if (isset($response->errorCode)) {
 
-                            $message = $batch . '-' . $dateFrom . '-' . $campaigns->id . '-' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign per site daily stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
+                            $message = '[BATCH TYPE:]' . $batch_type . '-[DATE FROM:]' . $dateFrom . '-[CAMPAIGN ID:]' . $campaigns->id . '-[SITESCOUT CAMPAIGN ID:]' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign site daily stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
                             Yii::log($message, 'error');
                             $return = $return + 1;
                         } else {
@@ -1451,7 +1449,7 @@ class CronSiteScoutAPI {
                 }
             }
         }
-       return $return;
+        return $return;
     }
 
 }
