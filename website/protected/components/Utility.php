@@ -71,8 +71,8 @@ class Utility {
 
         return $status->id;
     }
-    
-       /**
+
+    /**
      * Get Status code
      * get status code from fd_campaign_status
      */
@@ -106,28 +106,28 @@ class Utility {
         return $review_status->id;
     }
 
-      /**
+    /**
      * Get ReviewStatus ID
      * get status code from fd_campaign_review_status
      */
     public static function GetBidRange() {
 
 
-        $siterule = SiteRule::model()->findAll(array( 'order'=>'sitescout_ave_cpm desc', 'condition'=>'sitescout_ave_cpm>:ave_cpm', 'params'=>array(':ave_cpm'=>0)));
+        $siterule = SiteRule::model()->findAll(array('order' => 'sitescout_ave_cpm desc', 'condition' => 'sitescout_ave_cpm>:ave_cpm', 'params' => array(':ave_cpm' => 0)));
         $count = count($siterule);
-        $max_rec= intval ($count*0.8);
-        $min_rec= intval ($count*0.5);
-        
-        foreach ($siterule as $siterules)  
-            {
+        $max_rec = intval($count * 0.8);
+        $min_rec = intval($count * 0.5);
+
+        foreach ($siterule as $siterules) {
             if ($count == $max_rec)
                 $max_val = $siterules->sitescout_ave_cpm;
-             if ($count == $min_rec)
+            if ($count == $min_rec)
                 $min_val = $siterules->sitescout_ave_cpm;
-                $count = $count - 1;
-            }
-            $range = 'Recommended bidding range: $'.$min_val.' - $'.$max_val;
-            return $range;
+            $count = $count - 1;
+        }
+        //$range = 'Recommended bidding range: $'.$min_val.' - $'.$max_val;
+        $range = 'Recommended bidding range: $1.8 - $2.5';
+        return $range;
     }
-    
+
 }
