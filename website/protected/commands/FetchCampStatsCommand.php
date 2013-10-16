@@ -29,7 +29,7 @@ class FetchCampStatsCommand extends CConsoleCommand {
         $batchjoblog->save();
 
         //fetch campaign stats daily
-        //run once day, when system time is in 01 AM
+        //run once day, when system time is after 01 AM
         if (date("YmdH") == date("Ymd") . '01') {
             $error_msg = null;
             $batchjoblog = new BatchJobLog;
@@ -40,8 +40,9 @@ class FetchCampStatsCommand extends CConsoleCommand {
             if ($this->_siteScoutApi == null) {
                 $this->_siteScoutApi = new CronSiteScoutAPI();
             }
-
-            $response = $this->_siteScoutApi->retrieveStatCampSite();
+            $campaignDate = date("Ymd", time() - 86400);
+  
+            $response = $this->_siteScoutApi->retrieveStatCampSite($campaignDate);
 
             $batchjoblog->end_datetime = date("Y-m-d H:i:s");
             if ($response == 0) {
