@@ -262,17 +262,17 @@ class CampaignController extends Controller
 
 		$conditions = "campaign_date >= '$fromDate' and campaign_date <= '$toDate' and campaign_id IN ($campaignIds)";
 		$rawStatsData=Yii::app()->db->createCommand("SELECT * FROM fd_campaign_site_stats_daily where $conditions")->queryAll();
-		$statsData = array();
+		$statsDataMap = array();
 		
 		foreach ($rawStatsData as $rawData) {
 			$campaignId = $rawData['campaign_id'];
 			$statsForCampaign = null;
-			if (!isset($statsData[$campaignId])) {
+			if (!isset($statsDataMap[$campaignId])) {
 				$statsForCampaign = $this->createNewCampaignStats();
-				$statsData[$campaignId] = $statsForCampaign;
+				$statsDataMap[$campaignId] = $statsForCampaign;
 			}
 			else {
-				$statsForCampaign = $statsData[$campaignId];
+				$statsForCampaign = $statsDataMap[$campaignId];
 			}
 			// If there's already "DAILY" data, skip all the "HOURLY" data
 			if ($rawData['batch_type'] == "HOURLY" && $statsForCampaign['batch_type'] == "DAILY") {
@@ -290,10 +290,32 @@ class CampaignController extends Controller
 			$statsForCampaign['totalSpend']         += $rawData['totalSpend'];
 			$statsForCampaign['clicks']             += $rawData['clicks'];
 			$statsForCampaign['clickthruRate']      += $rawData['clickthruRate'];
-			$statsForCampaign['costPerClick']       += $rawData['costPerClick'];
 			$statsForCampaign['batch_type']          = $rawData['batch_type'];
+			if ($statsForCampaign['clicks'] == 0) {
+				$statsForCampaign['costPerClick'] = 0;
+			}
+			else {
+				$statsForCampaign['costPerClick']    = $statsForCampaign['totalSpend'] / $statsForCampaign['clicks'];
+			}
+
+			if ($statsForCampaign['impressionsWon'] == 0) {
+				$statsForCampaign['clickthruRate'] = 0;
+				$statsForCampaign['effectiveCPM'] = 0;
+				$statsForCampaign['totalEffectiveCPM'] = 0;
+			}
+			else {
+				$statsForCampaign['clickthruRate']    = $statsForCampaign['clicks'] / $statsForCampaign['impressionsWon'] * 100;
+				$statsForCampaign['effectiveCPM'] = $statsForCampaign['auctionsSpend'] / $statsForCampaign['impressionsWon'] * 1000;
+				$statsForCampaign['totalEffectiveCPM'] = $statsForCampaign['totalSpend'] / $statsForCampaign['impressionsWon'] * 1000;
+			}
 			
-			$statsData[$campaignId] = $statsForCampaign;
+			$statsDataMap[$campaignId] = $statsForCampaign;
+		}
+		
+		$statsData = array();
+		foreach ($statsDataMap as $statsItem) {
+			$statsItem = $this->formatCampaignStats($statsItem);
+			$statsData[] = $statsItem;
 		}
 		
 		$dataProvider=new CArrayDataProvider($statsData, array(
@@ -345,7 +367,7 @@ class CampaignController extends Controller
 			
 			$statsForSite['id']                  = $rawData['id'];
 			$statsForSite['domain']              = $domain;
-			$statsForSite['defaultBid']         += $rawData['defaultBid'];
+			$statsForSite['defaultBid']          = $rawData['defaultBid'];
 			$statsForSite['impressionsBid']     += $rawData['impressionsBid'];
 			$statsForSite['impressionsWon']     += $rawData['impressionsWon'];
 			$statsForSite['effectiveCPM']       += $rawData['effectiveCPM'];
@@ -357,11 +379,27 @@ class CampaignController extends Controller
 			$statsForSite['costPerClick']       += $rawData['costPerClick'];
 			$statsForSite['batch_type']          = $rawData['batch_type'];
 			
+			// Calculate some fields
+			if ($statsForSite['clicks'] == 0) $statsForSite['costPerClick'] = 0;
+			else $statsForSite['costPerClick']    = $statsForSite['totalSpend'] / $statsForSite['clicks'];
+			
+			if ($statsForSite['impressionsWon'] == 0) {
+				$statsForSite['clickthruRate'] = 0;
+				$statsForSite['effectiveCPM'] = 0;
+				$statsForSite['totalEffectiveCPM'] = 0;
+			}
+			else {
+				$statsForSite['clickthruRate']    = $statsForSite['clicks'] / $statsForSite['impressionsWon'] * 100;
+				$statsForSite['effectiveCPM'] = $statsForSite['auctionsSpend'] / $statsForSite['impressionsWon'] * 1000;
+				$statsForSite['totalEffectiveCPM'] = $statsForSite['totalSpend'] / $statsForSite['impressionsWon'] * 1000;
+			}
+			
 			$statsDataMap[$domain] = $statsForSite;
 		}
 		
 		$statsData = array();
 		foreach ($statsDataMap as $statsItem) {
+			$statsItem = $this->formatSiteStats($statsItem);
 			$statsData[] = $statsItem;
 		}
 		
@@ -430,6 +468,17 @@ class CampaignController extends Controller
 		$newStats['batch_type'] = "HOURLY";
 		return $newStats;
 	}
+
+	function formatCampaignStats($statsArray) {
+		$statsArray['effectiveCPM'] = '$' . number_format($statsArray['effectiveCPM'], 2, '.', '');
+		$statsArray['auctionsSpend'] = '$' . number_format($statsArray['auctionsSpend'], 2, '.', '');
+		$statsArray['totalEffectiveCPM'] = '$' . number_format($statsArray['totalEffectiveCPM'], 2, '.', '');
+		$statsArray['totalSpend'] = '$' . number_format($statsArray['totalSpend'], 2, '.', '');
+		$statsArray['clickthruRate'] = number_format($statsArray['clickthruRate'], 2, '.', '') . '%';
+		$statsArray['costPerClick'] = '$' . number_format($statsArray['costPerClick'], 2, '.', '');
+		
+		return $statsArray;
+	}
 	
 	function createNewSiteStats() {
 		$newStats = array();
@@ -448,4 +497,16 @@ class CampaignController extends Controller
 		$newStats['batch_type'] = "HOURLY";
 		return $newStats;
 	}
+	
+	function formatSiteStats($statsArray) {
+		$statsArray['defaultBid'] = '$' . number_format($statsArray['defaultBid'], 2, '.', '');
+		$statsArray['effectiveCPM'] = '$' . number_format($statsArray['effectiveCPM'], 2, '.', '');
+		$statsArray['auctionsSpend'] = '$' . number_format($statsArray['auctionsSpend'], 2, '.', '');
+		$statsArray['totalEffectiveCPM'] = '$' . number_format($statsArray['totalEffectiveCPM'], 2, '.', '');
+		$statsArray['totalSpend'] = '$' . number_format($statsArray['totalSpend'], 2, '.', '');
+		$statsArray['clickthruRate'] = number_format($statsArray['clickthruRate'], 2, '.', '') . '%';
+		$statsArray['costPerClick'] = '$' . number_format($statsArray['costPerClick'], 2, '.', '');
+		return $statsArray;
+	}
+	
 }
