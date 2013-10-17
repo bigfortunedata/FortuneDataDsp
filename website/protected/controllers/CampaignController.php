@@ -33,7 +33,7 @@ class CampaignController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'index', 'create', 'update', 'view', and 'delete' actions
-				'actions'=>array('index', 'create','update','view','delete','admin','toggle'),
+				'actions'=>array('index', 'create','update','view','delete','admin','toggle', 'stats', 'siteStats'),
 				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
@@ -233,6 +233,153 @@ class CampaignController extends Controller
 	}
 
 	/**
+	 * Stats action.
+	 */
+	public function actionStats()
+	{
+		// Default to 3 days ago
+		$fromDate = date("Y-m-d", time() - 259200);
+		$toDate = date("Y-m-d", time());
+		
+		if(isset($_POST['FromDate']) && $this->validateDate($_POST['FromDate'], 'Y-m-d'))
+			$fromDate=$_POST['FromDate'];
+		if(isset($_POST['ToDate']) && $this->validateDate($_POST['ToDate'], 'Y-m-d'))
+			$toDate=$_POST['ToDate'];
+		
+		$filters = array();
+		$filters['fromDate'] = $fromDate;
+		$filters['toDate'] = $toDate;
+		
+		$userId = Yii::app()->user->id;
+		$allCampaigns=Yii::app()->db->createCommand("SELECT * FROM fd_campaign where user_id = '$userId' and status_id != 3")->queryAll();
+		$campaignIdsArray = array();
+		$campaignNames = array();
+		foreach ($allCampaigns as $campaign) {
+			$campaignIdsArray[] = $campaign['id'];
+			$campaignNames[$campaign['id']] = $campaign['name'];
+		}
+		$campaignIds = join(',', $campaignIdsArray);
+
+		$conditions = "campaign_date >= '$fromDate' and campaign_date <= '$toDate' and campaign_id IN ($campaignIds)";
+		$rawStatsData=Yii::app()->db->createCommand("SELECT * FROM fd_campaign_site_stats_daily where $conditions")->queryAll();
+		$statsData = array();
+		
+		foreach ($rawStatsData as $rawData) {
+			$campaignId = $rawData['campaign_id'];
+			$statsForCampaign = null;
+			if (!isset($statsData[$campaignId])) {
+				$statsForCampaign = $this->createNewCampaignStats();
+				$statsData[$campaignId] = $statsForCampaign;
+			}
+			else {
+				$statsForCampaign = $statsData[$campaignId];
+			}
+			// If there's already "DAILY" data, skip all the "HOURLY" data
+			if ($rawData['batch_type'] == "HOURLY" && $statsForCampaign['batch_type'] == "DAILY") {
+				continue;
+			}
+			
+			$statsForCampaign['id']                  = $campaignId;
+			$statsForCampaign['campaign_id']         = $campaignId;
+			$statsForCampaign['campaignName']        = $campaignNames[$campaignId];
+			$statsForCampaign['impressionsBid']     += $rawData['impressionsBid'];
+			$statsForCampaign['impressionsWon']     += $rawData['impressionsWon'];
+			$statsForCampaign['effectiveCPM']       += $rawData['effectiveCPM'];
+			$statsForCampaign['auctionsSpend']      += $rawData['auctionsSpend'];
+			$statsForCampaign['totalEffectiveCPM']  += $rawData['totalEffectiveCPM'];
+			$statsForCampaign['totalSpend']         += $rawData['totalSpend'];
+			$statsForCampaign['clicks']             += $rawData['clicks'];
+			$statsForCampaign['clickthruRate']      += $rawData['clickthruRate'];
+			$statsForCampaign['costPerClick']       += $rawData['costPerClick'];
+			$statsForCampaign['batch_type']          = $rawData['batch_type'];
+			
+			$statsData[$campaignId] = $statsForCampaign;
+		}
+		
+		$dataProvider=new CArrayDataProvider($statsData, array(
+		    'id'=>'campaign_id',
+		    'sort'=>array(
+		        'attributes'=>array(
+		             'campaign_id',
+		        ),
+		    ),
+		    'pagination'=>array(
+		        'pageSize'=>100,
+		    ),
+		));
+		
+		
+		$this->render('stats',array(
+			'dataProvider'=>$dataProvider,
+			'filters'=>$filters
+		));
+	}
+	
+	/**
+	 * Site stats action.
+	 */
+	public function actionSiteStats($id, $fromDate, $toDate)
+	{
+		if(!$this->validateDate($fromDate, 'Y-m-d'))
+			$fromDate=date("Y-m-d", time() - 259200);
+		if(!$this->validateDate($toDate, 'Y-m-d'))
+			$toDate=date("Y-m-d", time());
+		$conditions = "campaign_date >= '$fromDate' and campaign_date <= '$toDate' and campaign_id = '$id'";
+		$rawStatsData=Yii::app()->db->createCommand("SELECT * FROM fd_campaign_site_stats_daily where $conditions")->queryAll();
+		$statsDataMap = array();
+		foreach ($rawStatsData as $rawData) {
+			$domain = $rawData['domain'];
+			$statsForSite = null;
+			if (!isset($statsDataMap[$domain])) {
+				$statsForSite = $this->createNewSiteStats();
+				$statsDataMap[$domain] = $statsForSite;
+			}
+			else {
+				$statsForSite = $statsDataMap[$domain];
+			}
+			
+			// If there's already "DAILY" data, skip all the "HOURLY" data
+			if ($rawData['batch_type'] == "HOURLY" && $statsForSite['batch_type'] == "DAILY") {
+				continue;
+			}
+			
+			$statsForSite['id']                  = $rawData['id'];
+			$statsForSite['domain']              = $domain;
+			$statsForSite['defaultBid']         += $rawData['defaultBid'];
+			$statsForSite['impressionsBid']     += $rawData['impressionsBid'];
+			$statsForSite['impressionsWon']     += $rawData['impressionsWon'];
+			$statsForSite['effectiveCPM']       += $rawData['effectiveCPM'];
+			$statsForSite['auctionsSpend']      += $rawData['auctionsSpend'];
+			$statsForSite['totalEffectiveCPM']  += $rawData['totalEffectiveCPM'];
+			$statsForSite['totalSpend']         += $rawData['totalSpend'];
+			$statsForSite['clicks']             += $rawData['clicks'];
+			$statsForSite['clickthruRate']      += $rawData['clickthruRate'];
+			$statsForSite['costPerClick']       += $rawData['costPerClick'];
+			$statsForSite['batch_type']          = $rawData['batch_type'];
+			
+			$statsDataMap[$domain] = $statsForSite;
+		}
+		
+		$statsData = array();
+		foreach ($statsDataMap as $statsItem) {
+			$statsData[] = $statsItem;
+		}
+		
+		$dataProvider=new CArrayDataProvider($statsData, array(
+		    'id'=>'id',
+		    'pagination'=>array(
+		        'pageSize'=>100,
+		    ),
+		));
+		
+		$model=Campaign::model()->findByPk($id);
+		$this->renderPartial('_siteStats',array(
+			'dataProvider'=>$dataProvider,
+			'campaign'=>$model->name,
+		));
+	}
+
+	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer $id the ID of the model to be loaded
@@ -259,5 +406,46 @@ class CampaignController extends Controller
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
+	}
+	
+	function validateDate($date, $format = 'Y-m-d H:i:s')
+	{
+	    $d = DateTime::createFromFormat($format, $date);
+	    return $d && $d->format($format) == $date;
+	}
+	
+	function createNewCampaignStats() {
+		$newStats = array();
+		$newStats['id'] = '';
+		$newStats['campaign_id'] = '';
+		$newStats['impressionsBid'] = 0;
+		$newStats['impressionsWon'] = 0;
+		$newStats['effectiveCPM'] = 0;
+		$newStats['auctionsSpend'] = 0;
+		$newStats['totalEffectiveCPM'] = 0;
+		$newStats['totalSpend'] = 0;
+		$newStats['clicks'] = 0;
+		$newStats['clickthruRate'] = 0;
+		$newStats['costPerClick'] = 0;
+		$newStats['batch_type'] = "HOURLY";
+		return $newStats;
+	}
+	
+	function createNewSiteStats() {
+		$newStats = array();
+		$newStats['id'] = '';
+		$newStats['domain'] = '';
+		$newStats['defaultBid'] = 0;
+		$newStats['impressionsBid'] = 0;
+		$newStats['impressionsWon'] = 0;
+		$newStats['effectiveCPM'] = 0;
+		$newStats['auctionsSpend'] = 0;
+		$newStats['totalEffectiveCPM'] = 0;
+		$newStats['totalSpend'] = 0;
+		$newStats['clicks'] = 0;
+		$newStats['clickthruRate'] = 0;
+		$newStats['costPerClick'] = 0;
+		$newStats['batch_type'] = "HOURLY";
+		return $newStats;
 	}
 }
