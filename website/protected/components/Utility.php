@@ -16,11 +16,23 @@ class Utility {
 
     public static function GetAccountBalance() {
 
+        //get the payment
         $payment = ClientPayment::model()->findAll(array('condition' => ' user_id =' . Yii::app()->user->id . '  AND status = "SUCCESS"'));
-        $balance = 0;
+        $totalPayment = 0;
         foreach ($payment as $payments)
-            $balance+=$payments->amount;
-        return $balance;
+            $totalPayment = $totalPayment + $payments->amount;
+
+        //get the spending
+        $sql = "select  auctionsSpend from fd_campaign_stats_summary fs, fd_campaign fd where fd.id = fs.campaign_id and fd.user_id=" . Yii::app()->user->id;
+        $connection = Yii::app()->db;
+        $command = $connection->createCommand($sql);
+        $spend = $command->query();
+        $totalSpend = 0;
+        foreach ($spend as $spends) {
+            $totalSpend = $totalSpend + $spends['auctionsSpend'];
+        }
+        $balance = $totalPayment - $totalSpend;
+        return round($balance,2);
     }
 
     /**
