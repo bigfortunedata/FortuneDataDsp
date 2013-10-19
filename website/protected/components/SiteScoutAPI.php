@@ -334,7 +334,7 @@ class SiteScoutAPI {
                         ),
                         "flightDates" => array(
                             "from" => date("Ymd"),
-                             //"from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                            //"from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
                             "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
                         )
             );
@@ -357,8 +357,8 @@ class SiteScoutAPI {
                             "type" => 'campaign'
                         ),
                         "flightDates" => array(
-                           "from" => date("Ymd"), 
-                           // "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                            "from" => date("Ymd"),
+                            // "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
                             "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
                         )
             );
@@ -617,8 +617,15 @@ class SiteScoutAPI {
 
         //call sitescout API
         $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $allGeoRule_json);
+        
+                        if (isset($response->errorCode)) {
+                    throw new EHttpClientException(
+                    Yii::t('SiteScoutAPI', 'SiteScout addAllGeoRule API Failed : error- ' . $response->errorCode . '  -  ' . $response->message));
+                }
+
     }
 
+  
     /**
      *   setPagePosition
      *
@@ -963,10 +970,10 @@ class SiteScoutAPI {
 
             //convert campaign array to json format
             $campaign_json = json_encode($campaign_array);
- 
+
             //call sitescout API
             //return value : CAMPAIGN OBJECT
-             $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $campaign_json);
+            $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $campaign_json);
 
             if (isset($response->errorCode)) {
                 throw new EHttpClientException(

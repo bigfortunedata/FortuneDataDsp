@@ -106,7 +106,9 @@ class AdminCampaignController extends Controller {
             $failureMessage = "The campaign has already been approved. No need to approve again.";
         } else if ($model->reviewStatus->code == 'pending') {
             $failureMessage = "The campaign is pending review. No need to approve again.";
-        } else {
+        }  else if ($model->reviewStatus->code == 'eligible') {
+            $failureMessage = "The campaign has already been approved. No need to approve again.";
+        }else {
             if ($this->siteScoutApi == null) {
                 $this->siteScoutApi = new SiteScoutAPI();
             }
@@ -114,6 +116,8 @@ class AdminCampaignController extends Controller {
             // Check if the campaign has been approved before
             if ($model->sitescout_campaign_id != null) {
                 $response = $this->siteScoutApi->updateCampaign($model->id);
+                $response = $this->siteScoutApi->addAllGeoRule($model->id);
+                
                 //$successMessage = "The campaign has been approved before. Updated status.";
             } else {
                 //creating a new campaign 
