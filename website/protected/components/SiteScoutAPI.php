@@ -333,7 +333,8 @@ class SiteScoutAPI {
                             "evenDeliveryEnabled" => 'true'
                         ),
                         "flightDates" => array(
-                            "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                            "from" => date("Ymd"),
+                             //"from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
                             "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
                         )
             );
@@ -356,7 +357,8 @@ class SiteScoutAPI {
                             "type" => 'campaign'
                         ),
                         "flightDates" => array(
-                            "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                           "from" => date("Ymd"), 
+                           // "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
                             "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
                         )
             );
@@ -825,7 +827,8 @@ class SiteScoutAPI {
                                 "evenDeliveryEnabled" => 'true'
                             ),
                             "flightDates" => array(
-                                "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                                "from" => date("Ymd"),
+                                //"from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
                                 "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
                             )
                 );
@@ -848,7 +851,8 @@ class SiteScoutAPI {
                                 "type" => 'campaign'
                             ),
                             "flightDates" => array(
-                                "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                                "from" => date("Ymd"),
+                                //"from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
                                 "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
                             )
                 );
@@ -925,7 +929,8 @@ class SiteScoutAPI {
                                 "evenDeliveryEnabled" => 'true'
                             ),
                             "flightDates" => array(
-                                "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                                "from" => date("Ymd"),
+                                // "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
                                 "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
                             )
                 );
@@ -948,7 +953,8 @@ class SiteScoutAPI {
                                 "type" => 'campaign'
                             ),
                             "flightDates" => array(
-                                "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
+                                "from" => date("Ymd"),
+                                // "from" => str_replace('-', '', substr($campaign->start_datetime, 0, 12)),
                                 "to" => str_replace('-', '', substr($campaign->end_datetime, 0, 12))
                             )
                 );
@@ -957,10 +963,10 @@ class SiteScoutAPI {
 
             //convert campaign array to json format
             $campaign_json = json_encode($campaign_array);
-
+ 
             //call sitescout API
             //return value : CAMPAIGN OBJECT
-            $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $campaign_json);
+             $response = $this->SiteScoutApiCall($path, EHttpClient::PUT, null, null, $headerParameters, $campaign_json);
 
             if (isset($response->errorCode)) {
                 throw new EHttpClientException(
@@ -1297,11 +1303,11 @@ class SiteScoutAPI {
             'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
 
         foreach ($campaign as $campaigns) {
-            
-            
+
+
             $path = self::SITESCOUT_BASE_URL . 'campaigns/' . $campaigns->sitescout_campaign_id . '/stats';
 
-             //get the all the campain stats as of today
+            //get the all the campain stats as of today
             $stats_array =
                     array(
                         "dateFrom" => '20131001',
@@ -1574,7 +1580,7 @@ class SiteScoutAPI {
                 }
             }
         }
- 
+
         return $return;
     }
 
