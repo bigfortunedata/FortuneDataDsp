@@ -66,15 +66,21 @@ class Campaign extends FortuneDataActiveRecord {
             $this->budget_type_id = 1;
         }
 
-        //call API to change campaign status
+
         $curr = self::findByPk($this->id);
-        if ($curr && isset($curr->sitescout_campaign_id)&&($curr->review_status_id!=8) ) {
-            if ($this->status_id != $curr->status_id) {
-                $this->siteScoutApi = new SiteScoutAPI();
-                $response = $this->siteScoutApi->updateCampaignOnlineStaus($this->id, $this->status_id);
-                $this->status_id = Utility::GetStatusId($response->status);
-                $this->review_status_id = Utility::GetReviewStatusId($response->reviewStatus);
-            }
+        //1. if user switching the online/offline, call API to change campaign status, the review status is returned from SiteScout
+        //2. if user change an online campaign, call API to set the campaign status to offline, the review status is setup to SUBMITTED
+        //admin will approve campaign and set it back to online/eligible
+
+        if ($curr && isset($curr->sitescout_campaign_id) && ($curr->review_status_id != 8)
+                && ($this->status_id != $curr->status_id)) {
+            $this->siteScoutApi = new SiteScoutAPI();
+            $response = $this->siteScoutApi->updateCampaignOnlineStaus($this->id, $this->status_id);
+            $this->status_id = Utility::GetStatusId($response->status);
+            $this->review_status_id = Utility::GetReviewStatusId($response->reviewStatus);
+        } elseif ($curr && isset($curr->sitescout_campaign_id) && ($curr->status_id == 2) && ($this->review_status_id == 8)) {
+            $this->siteScoutApi = new SiteScoutAPI();
+            $response = $this->siteScoutApi->updateCampaignOnlineStaus($this->id, 1);
         }
 
         return parent::beforeSave();
@@ -402,7 +408,6 @@ class Campaign extends FortuneDataActiveRecord {
         return implode(',', $selectedRegionsArray);
     }
 
-
     /**
      *   allChildRegionsSelected
      *
@@ -493,12 +498,12 @@ class Campaign extends FortuneDataActiveRecord {
                 }
             }
         } else {
-	        if ($node->selected  == 1)
+            if ($node->selected == 1)
                 $checked = 'checked';
         }
 
         if (!$rootNode) {
-	        $regionsTree .= '<li><input name="Campaign[region_' . $node->id . ']" id="campaign_region_' . $node->id . '" type="checkbox"' . $checked . '>' . $node->name . "\n";
+            $regionsTree .= '<li><input name="Campaign[region_' . $node->id . ']" id="campaign_region_' . $node->id . '" type="checkbox"' . $checked . '>' . $node->name . "\n";
         }
         if (count($node->children) > 0) {
             $regionsTree .= "<ul>\n";

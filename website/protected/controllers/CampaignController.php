@@ -154,17 +154,19 @@ class CampaignController extends Controller
 		{
 			$model->attributes=$_POST['Campaign'];
 			$model->location = $model->getSelectedRegions($_POST['Campaign']);
-			if($model->save()) {
+			 //change the status to submit for all updating 
+			 $model->review_status_id = 8;
+                        if($model->save()) {
 				$model->saveRegions($_POST['Campaign']);
 				
 				// Check if the APIs should be called.
 				//if ($model->sitescout_campaign_id != NULL) {
-				//	$sdApiObject = new SiteScoutAPI();
-				//	$sdApiObject->updateCampaign($model->id);
+				// 	$sdApiObject = new SiteScoutAPI();
+				// 	$sdApiObject->updateCampaign($model->id);
                                
                                 //change the status to submit for all updating 
-					$model->review_status_id = 8;
-					$model->save();
+				//	$model->review_status_id = 8;
+				//	$model->save();
 				//}
 				
 				$this->redirect(array('index'));
