@@ -136,7 +136,14 @@ if ($model->isNewRecord) {
 	</div>
 
 	<div class="row buttons">
-		<?php echo CHtml::submitButton($model->isNewRecord ? 'Create' : 'Save'); ?>
+		<?php
+		if ($model->isNewRecord) {
+			echo CHtml::submitButton('Create');
+		}
+		else {
+			echo CHtml::submitButton('Save', array('confirm'=>'After you update the campaign, it will be reviewed by us before it can be put back online. Are you sure you want to update it?'));
+		}
+		?>
 	</div>
 
 <?php $this->endWidget(); ?>
