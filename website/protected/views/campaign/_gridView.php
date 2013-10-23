@@ -2,13 +2,32 @@
 $gridColumns = array(
 	array('name'=>'name','header'=>'Name'),
 	array(
-		'class'=>'bootstrap.widgets.TbToggleColumn',
-    	'toggleAction'=>'campaign/toggle',
-    	'name' => 'isOnline',
-    	'header' => 'Status',
-		'displayText' => 'Change status',
-		'checkedButtonLabel' => 'Online',
-		'uncheckedButtonLabel' => 'Offline',
+        'header' => 'View',
+        'htmlOptions' => array('nowrap'=>'nowrap'),
+        'class'=>'bootstrap.widgets.TbButtonColumn',
+		'template'=>'{online}{offline}',
+		'buttons'=>array(
+			'online' => array(
+	            'label'=>'Online',
+	            'url'=>'array("campaign/offline", "id"=>$data->id)',
+	            'options'=>array(
+	                'class'=>'btn btn-small',
+					'confirm'=>'The campaign is currently online. Do you want to change it to offline?',
+	            ),
+				'visible'=>'$data->isOnline',
+				'imageUrl'=>Yii::app()->request->baseUrl . '/images/icon_online.png',
+	        ),
+			'offline' => array(
+	            'label'=>'Offline',
+	            'url'=>'array("campaign/online", "id"=>$data->id)',
+	            'options'=>array(
+	                'class'=>'btn btn-small',
+					'confirm'=>'The campaign is currently offline. Do you want to change it to online?',
+	            ),
+				'visible'=>'$data->isOffline',
+				'imageUrl'=>Yii::app()->request->baseUrl . '/images/icon_offline.png',
+	        ),
+		),
 	),
 	'default_bid',
 	array('name'=>'reviewStatus.description','header'=>'Review Status'),

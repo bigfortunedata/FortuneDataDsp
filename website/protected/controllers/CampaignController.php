@@ -33,7 +33,7 @@ class CampaignController extends Controller
 	{
 		return array(
 			array('allow', // allow authenticated user to perform 'index', 'create', 'update', 'view', and 'delete' actions
-				'actions'=>array('index', 'create','update','view','delete','admin','toggle', 'stats', 'siteStats'),
+				'actions'=>array('index', 'create','update','view','delete','admin','online', 'offline', 'stats', 'siteStats'),
 				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
@@ -115,6 +115,32 @@ class CampaignController extends Controller
 		));
 	}
 
+	/**
+	 * Change the status to online.
+	 */
+	public function actionOnline($id)
+	{	
+		$model=$this->loadModel($id);
+		if ($model->status_id == 1) {
+			$model->status_id = 2;
+			$model->save();
+		}
+		$this->redirect(array('index'));
+	}
+	
+	/**
+	 * Change the status to offline.
+	 */
+	public function actionOffline($id)
+	{
+		$model=$this->loadModel($id);
+		if ($model->status_id == 2) {
+			$model->status_id = 1;
+			$model->save();
+		}
+		$this->redirect(array('index'));
+	}
+	
 	/**
 	 * Toggle some properties such as status.
 	 */

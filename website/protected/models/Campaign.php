@@ -470,9 +470,19 @@ class Campaign extends FortuneDataActiveRecord {
      */
     public function getIsOnline() {
         if ($this->status_id == 2)
-            return "online";
+            return true;
         else
             return false;
+    }
+
+    /**
+     * Whether the campaign is offline
+     */
+    public function getIsOffline() {
+        if ($this->status_id == 2)
+            return false;
+        else
+            return true;
     }
 
     /**
