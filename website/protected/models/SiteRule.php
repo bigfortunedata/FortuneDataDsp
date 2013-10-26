@@ -16,9 +16,7 @@
  * @property string $update_time
  * @property integer $update_user_id
  * @property string $type
- *
- * The followings are the available model relations:
- * @property CampaignSiteRule[] $campaignSiteRules
+ * @property string $status
  */
 class SiteRule extends CActiveRecord
 {
@@ -50,12 +48,12 @@ class SiteRule extends CActiveRecord
 		return array(
 			array('sitescout_site_id, domain', 'required'),
 			array('create_user_id, update_user_id', 'numerical', 'integerOnly'=>true),
-			array('sitescout_site_id, exchange, sitescout_category, sitescout_ave_cpm, sitescout_imps, type', 'length', 'max'=>45),
+			array('sitescout_site_id, exchange, sitescout_category, sitescout_ave_cpm, sitescout_imps, type, status', 'length', 'max'=>45),
 			array('domain', 'length', 'max'=>200),
 			array('create_time, update_time', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, sitescout_site_id, domain, exchange, sitescout_category, sitescout_ave_cpm, sitescout_imps, create_time, create_user_id, update_time, update_user_id, type', 'safe', 'on'=>'search'),
+			array('id, sitescout_site_id, domain, exchange, sitescout_category, sitescout_ave_cpm, sitescout_imps, create_time, create_user_id, update_time, update_user_id, type, status', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -67,7 +65,6 @@ class SiteRule extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'campaignSiteRules' => array(self::HAS_MANY, 'CampaignSiteRule', 'site_rule_id'),
 		);
 	}
 
@@ -89,6 +86,7 @@ class SiteRule extends CActiveRecord
 			'update_time' => 'Update Time',
 			'update_user_id' => 'Update User',
 			'type' => 'Type',
+			'status' => 'Status',
 		);
 	}
 
@@ -115,6 +113,7 @@ class SiteRule extends CActiveRecord
 		$criteria->compare('update_time',$this->update_time,true);
 		$criteria->compare('update_user_id',$this->update_user_id);
 		$criteria->compare('type',$this->type,true);
+		$criteria->compare('status',$this->status,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
