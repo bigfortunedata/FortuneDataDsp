@@ -281,6 +281,37 @@ class CronSiteScoutAPI {
      *
      * Get Active Ads Exchange
      */
+    public function getSite() {
+        $response = new stdClass;
+        
+        $i=0;
+
+        $headerParameters = array(
+            'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
+
+        $siterule = SiteRule::model()->findAll();
+
+        foreach ($siterule as $siterules) {
+            $path = self::SITESCOUT_API_URL . 'sites/' . $siterules->sitescout_site_id;
+            $response = $this->SiteScoutApiCall($path, EHttpClient::GET, null, null, $headerParameters);
+
+            if (isset($response->siteRef)) {
+                SiteRule::model()->updateByPk($siterules->id, array('status' => 'online'));
+                $i = $i+1;
+            } else {
+                SiteRule::model()->updateByPk($siterules->id, array('status' => 'offline'));
+            }
+      }
+         if ($i>5)
+             return 'success';
+        // return $response;
+    }
+
+    /**
+     *   getActiveAdExchange
+     *
+     * Get Active Ads Exchange
+     */
     public function getActiveAdExchange() {
         $path = self::SITESCOUT_API_URL . 'exchanges';
         $headerParameters = array(
