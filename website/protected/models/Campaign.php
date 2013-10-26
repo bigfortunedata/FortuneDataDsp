@@ -72,17 +72,20 @@ class Campaign extends FortuneDataActiveRecord {
         //2. if user change an online campaign, call API to set the campaign status to offline, the review status is setup to SUBMITTED
         //admin will approve campaign and set it back to online/eligible
 
-        if ($curr && isset($curr->sitescout_campaign_id) && ($curr->review_status_id != 8)
-                && ($this->status_id != $curr->status_id)) {
+        if ($curr && isset($curr->sitescout_campaign_id) && ($curr->review_status_id != 8) && ($this->status_id != $curr->status_id)) {
             $this->siteScoutApi = new SiteScoutAPI();
             $response = $this->siteScoutApi->updateCampaignOnlineStaus($this->id, $this->status_id);
             $this->status_id = Utility::GetStatusId($response->status);
             $this->review_status_id = Utility::GetReviewStatusId($response->reviewStatus);
         } elseif ($curr && isset($curr->sitescout_campaign_id) && ($curr->status_id == 2) && ($this->review_status_id == 8)) {
             $this->siteScoutApi = new SiteScoutAPI();
-            $response = $this->siteScoutApi->updateCampaignOnlineStaus($this->id, 1);
+            $end_date = null;
+            if ($curr->end_datetime != $this->end_datetime)
+            {$end_date = $this->end_datetime;}
+            $response = $this->siteScoutApi->updateCampaignOnlineStaus($this->id, 1,$end_date);
         }
-
+  
+       
         return parent::beforeSave();
     }
 
@@ -152,6 +155,8 @@ class Campaign extends FortuneDataActiveRecord {
                 'allowEmpty' => false,
                 'message' => '{attribute} must be greater than {compareAttribute}.'
             ),
+            array('end_datetime', 'compare', 'compareValue' => date("Y-m-d"), 'operator' => '>',
+                'message' => '{attribute} must be greater than current date.'),
             array(
                 'end_datetime',
                 'compare',
