@@ -102,13 +102,17 @@ class AdminCampaignController extends Controller {
         $model = $this->loadModel($id);
         $successMessage = null;
         $failureMessage = null;
+        /* if ($model->status->code != 'online') {
+          $failureMessage = "The campaign is offline, can not been approved.";
+          }
+          else */
         if ($model->reviewStatus->code == 'approved') {
             $failureMessage = "The campaign has already been approved. No need to approve again.";
         } else if ($model->reviewStatus->code == 'pending') {
             $failureMessage = "The campaign is pending review. No need to approve again.";
-        }  else if ($model->reviewStatus->code == 'eligible') {
+        } else if ($model->reviewStatus->code == 'eligible') {
             $failureMessage = "The campaign has already been approved. No need to approve again.";
-        }else {
+        } else {
             if ($this->siteScoutApi == null) {
                 $this->siteScoutApi = new SiteScoutAPI();
             }
@@ -116,8 +120,9 @@ class AdminCampaignController extends Controller {
             // Check if the campaign has been approved before
             if ($model->sitescout_campaign_id != null) {
                 $response = $this->siteScoutApi->updateCampaign($model->id);
-                $response = $this->siteScoutApi->addAllGeoRule($model->id);
-                
+                $this->siteScoutApi->addAllGeoRule($model->id);
+                $this->siteScoutApi->removeSiteRule($model->id);
+                $this->siteScoutApi->addSiteRule($model->id);
                 //$successMessage = "The campaign has been approved before. Updated status.";
             } else {
                 //creating a new campaign 
@@ -137,7 +142,7 @@ class AdminCampaignController extends Controller {
                 //we manually set it status back to ONLINE
                 if ($model->status_id == 2) {
                     $response = $this->siteScoutApi->updateCampaignOnlineStaus($model->id, 2);
-                              }
+                }
 
                 if (isset($response->status)) {
                     $successMessage = "The campaign is pending review.";
