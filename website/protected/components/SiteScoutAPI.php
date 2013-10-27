@@ -715,6 +715,9 @@ class SiteScoutAPI {
 
                 if ($bid_price == 0 OR $bid_price > $campaign->default_bid)
                     $bid_price = $campaign->default_bid;
+                
+                    $bid_price = $bid_price*rand(0.9,1.2);
+                    $bid_price = round($bid_price,2);
 
                 $campaign_site_rule = CampaignSiteRule::model()->findByAttributes(array('campaign_id' => $campaign->id, 'site_rule_id' => $site_rules->id));
 
@@ -788,6 +791,8 @@ class SiteScoutAPI {
                     break;
             }
         }
+        if ($site_rule_count> 1 )
+             return 'success';
     }
 
     /**

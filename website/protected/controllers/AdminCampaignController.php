@@ -122,7 +122,15 @@ class AdminCampaignController extends Controller {
                 $response = $this->siteScoutApi->updateCampaign($model->id);
                 $this->siteScoutApi->addAllGeoRule($model->id);
                 $this->siteScoutApi->removeSiteRule($model->id);
-                $this->siteScoutApi->addSiteRule($model->id);
+                $return_status = $this->siteScoutApi->addSiteRule($model->id);
+                
+                if (isset($response->status)&&($return_status=='success')) {
+                    $successMessage = "The campaign updating has been approved.";
+                    //$model->save();
+                } else {
+                    $failureMessage = "Encountered error in approving this campaign updating";
+                }
+                
                 //$successMessage = "The campaign has been approved before. Updated status.";
             } else {
                 //creating a new campaign 
@@ -135,8 +143,8 @@ class AdminCampaignController extends Controller {
                 $this->siteScoutApi->uploadAllCreative($model->id);
                 $this->siteScoutApi->addAllCreative($model->id);
                 $this->siteScoutApi->setPagePosition($model->id);
-                $this->siteScoutApi->addSiteRule($model->id);
                 $this->siteScoutApi->addAllGeoRule($model->id);
+                $return_status =$this->siteScoutApi->addSiteRule($model->id);
                 //Campaign only can be set online as it has both creatives and inventory sources
                 //if the orignal campaign status is online, sitescout api set its default status to offline
                 //we manually set it status back to ONLINE
@@ -144,11 +152,11 @@ class AdminCampaignController extends Controller {
                     $response = $this->siteScoutApi->updateCampaignOnlineStaus($model->id, 2);
                 }
 
-                if (isset($response->status)) {
-                    $successMessage = "The campaign is pending review.";
+                if (isset($response->status)&&($return_status=='success')) {
+                    $successMessage = "The new campaign is pending review.";
                     //$model->save();
                 } else {
-                    $failureMessage = "Encountered error in approving this campaign";
+                    $failureMessage = "Encountered error in approving this new campaign";
                 }
             }
         }
