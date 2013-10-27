@@ -205,7 +205,7 @@ class SiteScoutAPI {
 
         $client = new EHttpClient($path, array(
             'maxredirects' => 2,
-            'timeout' =>30,
+            'timeout' => 30,
             'adapter' => 'EHttpClientAdapterCurl'
         ));
 
@@ -713,11 +713,12 @@ class SiteScoutAPI {
                     };
                 };
 
-                if ($bid_price == 0 OR $bid_price > $campaign->default_bid)
+
+                $bid_price = $bid_price * rand(0.9, 1.2);
+                $bid_price = round($bid_price, 2);
+
+                if (($bid_price == 0) OR ($bid_price > $campaign->default_bid))
                     $bid_price = $campaign->default_bid;
-                
-                    $bid_price = $bid_price*rand(0.9,1.2);
-                    $bid_price = round($bid_price,2);
 
                 $campaign_site_rule = CampaignSiteRule::model()->findByAttributes(array('campaign_id' => $campaign->id, 'site_rule_id' => $site_rules->id));
 
@@ -791,8 +792,8 @@ class SiteScoutAPI {
                     break;
             }
         }
-        if ($site_rule_count> 1 )
-             return 'success';
+        if ($site_rule_count > 1)
+            return 'success';
     }
 
     /**
@@ -841,7 +842,7 @@ class SiteScoutAPI {
             if (isset($response->status)) {
                 $count = $campaign_site_rules->updateByPk(
                         $campaign_site_rules->id, array('status_id' => Utility::GetStatusId($response->status),
-                            'update_time' => date('Y-m-d H:i:s'),
+                    'update_time' => date('Y-m-d H:i:s'),
                     'review_status_id' => Utility::GetReviewStatusId($response->reviewStatus)));
             }
         }
