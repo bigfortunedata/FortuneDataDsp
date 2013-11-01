@@ -287,9 +287,11 @@ class CampaignController extends Controller
 			$campaignNames[$campaign['id']] = $campaign['name'];
 		}
 		$campaignIds = join(',', $campaignIdsArray);
-
-		$conditions = "campaign_date >= '$fromDate' and campaign_date <= '$toDate' and campaign_id IN ($campaignIds)";
-		$rawStatsData=Yii::app()->db->createCommand("SELECT * FROM fd_campaign_site_stats_daily where $conditions")->queryAll();
+		$rawStatsData = array();
+		if ($campaignIds != "") {
+			$conditions = "campaign_date >= '$fromDate' and campaign_date <= '$toDate' and campaign_id IN ($campaignIds)";
+			$rawStatsData=Yii::app()->db->createCommand("SELECT * FROM fd_campaign_site_stats_daily where $conditions")->queryAll();
+		}
 		$statsDataMap = array();
 		
 		foreach ($rawStatsData as $rawData) {
