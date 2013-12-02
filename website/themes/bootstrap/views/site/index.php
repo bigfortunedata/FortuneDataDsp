@@ -41,7 +41,7 @@ $this->pageTitle=Yii::app()->name;
 <td width=" 50%">
 <p style=" font-size:20px;"> <i> <b>Our Solution</b></i></p>
 <p>Fortune Data Self-Serve Programmatic Advertising Platform provides businesses one-stop solution to engage Chinese consumers in real time and deliver your relevant marketing campaign content across all vast networks.</p>
-<p > <b><a href="http://dsp.bigfortunedata.com/registration/registration/registration" >Free Trial 10,000 Banner Impressions  免费试用一万次广告显示</a></b> </p>
+<p > <b><a href="http://dsp.bigfortunedata.com/campaign/index" >Free Trial 10,000 Banner Impressions  免费试用一万次广告显示</a></b> </p>
 
 </td>
 </tr>
