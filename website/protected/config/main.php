@@ -6,7 +6,6 @@
 // CWebApplication properties can be configured here.
 return array(
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
-    'sourceLanguage'=>'en',
     'name' => 'Fortune Data: Self-Serve Advertising Platform',
     //'theme'=>'abound',
     'theme' => 'bootstrap',

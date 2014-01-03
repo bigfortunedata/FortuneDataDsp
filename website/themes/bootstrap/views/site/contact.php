@@ -9,7 +9,7 @@ $this->breadcrumbs = array(
 );
 ?>
 
-<h3 style ="margin-left:50px">Contact Us</h3>
+<h3 style ="margin-left:50px"><?php echo Yii::t('contact', 'title');?></h3>
 
 <?php if (Yii::app()->user->hasFlash('contact')): ?>
 
@@ -25,7 +25,7 @@ $this->breadcrumbs = array(
     <table border="0">
         <tr>
             <td><p style ="margin-left:50px">
-                    If you have business inquiries or other questions, please fill out the following form to contact us. Thank you.
+                    <?php echo Yii::t('contact', 'message');?>
                 </p>
 
                 <div class="form">
@@ -41,7 +41,7 @@ $this->breadcrumbs = array(
                     ));
                     ?>
 
-                    <p class="note" style ="margin-left:50px">Fields with <span class="required">*</span> are required.</p>
+                    <p class="note" style ="margin-left:50px"><?php echo Yii::t('contact', 'required');?></p>
 
                     <?php echo $form->errorSummary($model); ?>
 
@@ -56,7 +56,7 @@ $this->breadcrumbs = array(
                     <?php if (CCaptcha::checkRequirements()): ?>
                         <?php
                         echo $form->captchaRow($model, 'verifyCode', array(
-                            'hint' => 'Please enter the letters as they are shown in the image above.<br/>Letters are not case-sensitive.',
+                            'hint' => Yii::t('contact', 'verificationHint'),
                         ));
                         ?>
                     <?php endif; ?>
@@ -66,7 +66,7 @@ $this->breadcrumbs = array(
                         <?php
                         $this->widget('bootstrap.widgets.TbButton', array(
                             'buttonType' => 'submit',
-                            'label' => 'Submit',
+                            'label' => Yii::t('contact', 'Submit'),
                         ));
                         ?>
 
