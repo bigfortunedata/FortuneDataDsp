@@ -15,10 +15,12 @@
                     );
                     
                 }
+                /*
                 else {
                     echo "<img src=" . Yii::app()->request->baseUrl . "/images/lang_$lang.png>";
                 }
                 if($lang != $lastElement) echo ' | ';
+                */
             }
         }
         else {
