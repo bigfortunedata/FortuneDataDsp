@@ -5,7 +5,7 @@
             $lastElement = end($languages);
             foreach($languages as $key=>$lang) {
                 if($key != $currentLang) {
-                    echo CHtml::ajaxLink("<img src=" . Yii::app()->request->baseUrl . "/images/lang_$lang.gif>",'',
+                    echo CHtml::ajaxLink("<img src=" . Yii::app()->request->baseUrl . "/images/lang_$lang.png>",'',
                         array(
                             'type'=>'post',
                             'data'=>'_lang='.$key.'&YII_CSRF_TOKEN='.Yii::app()->request->csrfToken,
@@ -16,7 +16,7 @@
                     
                 }
                 else {
-                    echo "<img src=" . Yii::app()->request->baseUrl . "/images/lang_$lang.gif>";
+                    echo "<img src=" . Yii::app()->request->baseUrl . "/images/lang_$lang.png>";
                 }
                 if($lang != $lastElement) echo ' | ';
             }
