@@ -99,6 +99,8 @@
                                                         array('label' => 'Logout (' . Yii::app()->user->name . ')', 'url' => array('/site/logout'), 'visible' => !Yii::app()->user->isGuest)
                                                     ),
                                                 ));
+
+                                                $this->widget('application.components.widgets.LanguageSelector');
                                                 ?>
                                             </div>
                                         </div>

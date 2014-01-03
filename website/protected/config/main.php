@@ -6,6 +6,7 @@
 // CWebApplication properties can be configured here.
 return array(
     'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
+    'sourceLanguage'=>'en',
     'name' => 'Fortune Data: Self-Serve Advertising Platform',
     //'theme'=>'abound',
     'theme' => 'bootstrap',
@@ -27,6 +28,11 @@ return array(
         'application.modules.user.models.*',
          'bootstrap.helpers.TbHtml',
         'application.extensions.states.*',
+    ),
+    'behaviors'=>array(
+        'onBeginRequest' => array(
+            'class' => 'application.components.behaviors.BeginRequest'
+        ),
     ),
     'modules' => array(
         'user' => array(
@@ -176,11 +182,14 @@ return array(
              */
             ),
         ),
+        'enableCookieValidation'=>true,
+        'enableCsrfValidation'=>true,
     ),
     // application-level parameters that can be accessed
     // using Yii::app()->params['paramName']
     'params' => array(
         // this is used in contact page
         'adminEmail' => 'noreply@bigfortunedata.com',
+        'languages'=>array('en'=>'english', 'zh'=>'chinese'),
     ),
 );

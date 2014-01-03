@@ -205,7 +205,7 @@ class Campaign extends FortuneDataActiveRecord {
     public function attributeLabels() {
         return array(
             'id' => 'ID',
-            'name' => 'Campaign Name',
+            'name' => 'Campaign Name', //Yii::t('campaign','Test'),
             'user_id' => 'User',
             'status_id' => 'Status',
             'default_bid' => 'Default Bid',
