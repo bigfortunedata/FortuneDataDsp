@@ -96,6 +96,7 @@
                                                         // array('label'=>'Terms', 'url'=>array(Yii::app()->baseUrl . '/protected/views/site/pages/FORTUNEDATA_TERMS_AND_CONDITIONS.pdf'), 'linkOptions' => array('target'=>'_blank'),'visible'=>!Yii::app()->user->isGuest),
                                                         array('label' => Yii::t('home', 'Log in'), 'url' => array('/user/auth'), 'visible' => Yii::app()->user->isGuest),
                                                         array('label' => Yii::t('home', 'Sign Up'), 'url' => array('/registration/registration/registration'), 'visible' => Yii::app()->user->isGuest),
+                                                        array('label' => Yii::t('home', 'FAQ'), 'url' => array('/faq')),
                                                         array('label' => Yii::t('home', 'Logout') . ' (' . Yii::app()->user->name . ')', 'url' => array('/site/logout'), 'visible' => !Yii::app()->user->isGuest)
                                                     ),
                                                 ));

@@ -10,6 +10,7 @@ return array('title' => 'Fortune Data: Self-Serve Advertising Platform',
 	'Log in' => 'Log in',
 	'Sign Up' => 'Sign Up',
 	'Logout' => 'Logout',
+	'FAQ' => 'FAQ',
 	// Home content
 	'centerTitle' => '我们用实时竞价和受众定位技术，在高端中文媒体把您的广告精准地投送到全球任何一个地区的华人客户',
 	'centerContent' => 'Overseas Chinese consumers market continues to grow rapidly and accounts for an increasing share of global sales for certain sectors.',

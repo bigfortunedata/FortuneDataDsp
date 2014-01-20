@@ -10,6 +10,7 @@ return array('title' => 'Fortune Data: 自助广告平台',
 	'Log in' => '登录',
 	'Sign Up' => '注册',
 	'Logout' => '退出',
+	'FAQ' => '常见问题',
 	// Home content
 	'centerTitle' => '我们用实时竞价和受众定位技术，在高端中文媒体把您的广告精准地投送到全球任何一个地区的华人客户',
 	'centerContent' => '海外华人的购买力正在持续快速上升，在很多领域的国际销售市场中已经占有很大的份额。',
