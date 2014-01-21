@@ -9,6 +9,7 @@ return array(
     'name' => 'Fortune Data: Self-Serve Advertising Platform',
     //'theme'=>'abound',
     'theme' => 'bootstrap',
+    'language'=>'en',
     'aliases' => array(
         // yiistrap configuration
         'bootstrap' => realpath(__DIR__ . '/../extensions/bootstrap'), // change if necessary
