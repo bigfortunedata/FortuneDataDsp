@@ -144,3 +144,7 @@
 
                         </body>
                         </html>
+                        <?$this->widget('application.components.widgets..OWATrackerWidget',
+                            array('baseUrl'=>'http://dsp.bigfortunedata.com/owa/','siteId'=>'20ae0b29f643dda9045ab1003bedd539')
+                            );
+                        ?>
