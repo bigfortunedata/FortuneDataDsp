@@ -9,7 +9,7 @@ return array(
 
 	'Why is my budget never fully reached?'=>"There is a mechanism in place on the RTB platform that is used to prevent over-spending on the system. Due to the speed at which traffic can be bought on the system, this mechanism effectively throttles a campaign once it approaches the end of the budget (i.e., when there is $5.00 left.) So if you notice that your daily budget is never fully reached, it is not for lack of traffic, but because of this safety buffer.<p> For this reason, if your total daily budget is equal to, or less than, $5.00, your campaign will not get any traffic.",
 
-	'What is Average CPM?'=>"Average CPM is the average winning price observed on the SiteScout platform. Please note that this figure only reflects bid data on SiteScout, and that winning bid data from external platforms is not displayed.<p> In cases where the Average CPM is $0.00, it simply means that the system was unable to calculate an accurate average for that site, usually because no one has won traffic on it yet. ",
+	'What is Average CPM?'=>"Average CPM is the average winning price observed on our platform. Please note that this figure only reflects bid data on our platform, and that winning bid data from external platforms is not displayed.<p> In cases where the Average CPM is $0.00, it simply means that the system was unable to calculate an accurate average for that site, usually because no one has won traffic on it yet. ",
 
 	'What is Default Bid vs. eCPM?'=>'The Default Bid column is the maximum CPM price that you are willing to pay for a given site.<p> The eCPM column reflects the actual CPM price that you are winning at, and paying.',
 
