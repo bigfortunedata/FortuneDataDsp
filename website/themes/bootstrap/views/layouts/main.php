@@ -47,6 +47,12 @@
                         </head>
 
                         <body>
+                            <!-- SiteScout ReTargeting Script -->
+                            <script type='text/javascript'>
+                                var ssa = '97bf649abfe6b0df';
+                                var ssaUrl = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'pixel.sitescout.com/iap/' + ssa;
+                                new Image().src = ssaUrl;
+                            </script>
                             <!-- Start of StatCounter Code for Default Guide -->
                             <script type="text/javascript">
                                 var sc_project = 9286333;
@@ -79,7 +85,7 @@
                                             <div class="nav-collapse">
 
 
-                                                <a class="brand"  href="#"> <img src="<?php echo $baseUrl; ?>/img/cookie.png" height="35" width="35" > <?php echo Yii::t('home', 'title');?> </a>
+                                                <a class="brand"  href="#"> <img src="<?php echo $baseUrl; ?>/img/cookie.png" height="35" width="35" > <?php echo Yii::t('home', 'title'); ?> </a>
 
                                                 <?php
                                                 $this->widget('zii.widgets.CMenu', array(
@@ -144,7 +150,7 @@
 
                         </body>
                         </html>
-                        <?$this->widget('application.components.widgets..OWATrackerWidget',
-                            array('baseUrl'=>'http://dsp.bigfortunedata.com/owa/','siteId'=>'20ae0b29f643dda9045ab1003bedd539')
-                            );
+                        <?
+                        $this->widget('application.components.widgets..OWATrackerWidget', array('baseUrl' => 'http://dsp.bigfortunedata.com/owa/', 'siteId' => '20ae0b29f643dda9045ab1003bedd539')
+                        );
                         ?>
