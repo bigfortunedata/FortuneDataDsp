@@ -290,10 +290,10 @@ class CampaignController extends Controller
 		$rawStatsData = array();
 		if ($campaignIds != "") {
 			$conditions = "campaign_date >= '$fromDate' and campaign_date <= '$toDate' and campaign_id IN ($campaignIds)";
-			$rawStatsData=Yii::app()->db->createCommand("SELECT * FROM fd_campaign_site_stats_daily where $conditions")->queryAll();
+			$rawStatsData=Yii::app()->db->createCommand("SELECT * FROM fd_campaign_site_stats_daily where $conditions order by batch_type")->queryAll();
 		}
 		$statsDataMap = array();
-		
+		$finishedDates = array();
 		foreach ($rawStatsData as $rawData) {
 			$campaignId = $rawData['campaign_id'];
 			$statsForCampaign = null;
@@ -304,11 +304,16 @@ class CampaignController extends Controller
 			else {
 				$statsForCampaign = $statsDataMap[$campaignId];
 			}
-			// If there's already "DAILY" data, skip all the "HOURLY" data
-			if ($rawData['batch_type'] == "HOURLY" && $statsForCampaign['batch_type'] == "DAILY") {
-				continue;
+			// If there's already "DAILY" data for the current date, skip all the "HOURLY" data.
+			if ($rawData['batch_type'] == "HOURLY") {
+				if (isset($finishedDates[$rawData['campaign_date']])) {
+					continue;
+				}
 			}
-			
+			else {
+				$finishedDates[$rawData['campaign_date']] = 1;
+			}
+
 			$statsForCampaign['id']                  = $campaignId;
 			$statsForCampaign['campaign_id']         = $campaignId;
 			$statsForCampaign['campaignName']        = $campaignNames[$campaignId];
