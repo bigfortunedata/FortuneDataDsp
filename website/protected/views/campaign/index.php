@@ -12,5 +12,5 @@ $this->menu=array(
 );
 ?>
 
-<h4><?php echo "Campaigns"; ?></h4>
+<h4><?php echo Yii::t('Campaign', 'Campaigns'); ?></h4>
 <?php echo $this->renderPartial('_gridView', array('dataProvider'=>$dataProvider)); ?>

@@ -7,23 +7,23 @@
         
 		  <?php 
 		    $menuItems = array(
-			    array('label'=>'<i class="icon icon-home"></i>  Home ', 'url'=>array('/site/index'),'itemOptions'=>array('class'=>'')), 
+			    array('label'=>'<i class="icon icon-home"></i>  '.Yii::t('column', 'Home'), 'url'=>array('/site/index'),'itemOptions'=>array('class'=>'')), 
                         //<span class="label label-info pull-right">BETA</span>
-                array('label'=>'<i class="icon icon-book"></i> Reports', 'url'=>array('/campaign/stats' )),
-                array('label'=>'<i class="icon icon-star"></i> Manage Campaign', 'url'=>array('/campaign/index' )),
-                array('label'=>'<i class="icon icon-pencil"></i>  Create Campaign', 'url'=>array('/campaign/create' )),
+                array('label'=>'<i class="icon icon-book"></i> '.Yii::t('column', 'Reports'), 'url'=>array('/campaign/stats' )),
+                array('label'=>'<i class="icon icon-star"></i> '.Yii::t('column', 'Manage Campaign'), 'url'=>array('/campaign/index' )),
+                array('label'=>'<i class="icon icon-pencil"></i>  '.Yii::t('column', 'Create Campaign'), 'url'=>array('/campaign/create' )),
 				//array('label'=>'<i class="icon icon-search"></i> About this theme <span class="label label-important pull-right">HOT</span>', 'url'=>'http://www.webapplicationthemes.com/abound-yii-framework-theme/'),
 				// Include the operations menu
 				
 			    // Dynamic labels
 			    //if ($this->id === 'campaign' && $this->cid != null) {
 			    //array('label'=>'<i class="icon icon-user"></i>  Add Creative', 'url'=>array('creative/create', 'cid'=>$this->cid)),
-                array('label'=>'<i class="icon icon-user"></i>  Edit Profile', 'url'=>array('/profile/profile/update' )),
-                array('label'=>'<i class="icon icon-search"></i>  Payment History', 'url'=>array('/clientPayment/index' )),
-                array('label'=>'<i class="icon icon-repeat"></i>  Purchase Credit', 'url'=>array('/clientPayment/create' )),
-                array('label'=>'<i class="icon icon-lock"></i>  Change Password', 'url'=>array('/user/user/changePassword' )),
+                array('label'=>'<i class="icon icon-user"></i>  '.Yii::t('column', 'Edit Profile'), 'url'=>array('/profile/profile/update' )),
+                array('label'=>'<i class="icon icon-search"></i>  '.Yii::t('column', 'Payment History'), 'url'=>array('/clientPayment/index' )),
+                array('label'=>'<i class="icon icon-repeat"></i>  '.Yii::t('column', 'Purchase Credit'), 'url'=>array('/clientPayment/create' )),
+                array('label'=>'<i class="icon icon-lock"></i>  '.Yii::t('column', 'Change Password'), 'url'=>array('/user/user/changePassword' )),
                // array('label'=>'<i class="icon icon-inbox"></i>  Inbox', 'url'=>array('/message/message/index' )),
-                array('label'=>'<i class="icon icon-remove"></i>  Logout', 'url'=>array('/user/user/logout' )),
+                array('label'=>'<i class="icon icon-remove"></i>  '.Yii::t('column', 'Logout'), 'url'=>array('/user/user/logout' )),
 			);
 		    $this->widget('zii.widgets.CMenu', array(
 			/*'type'=>'list',*/

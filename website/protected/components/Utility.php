@@ -138,7 +138,7 @@ class Utility {
             $count = $count - 1;
         }
         //$range = 'Recommended bidding range: $'.$min_val.' - $'.$max_val;
-        $range = 'Recommended bidding range: $1.8 - $2.5';
+        $range = Yii::t('Utility', 'Recommended bidding range:').' $1.8 - $2.5';
         return $range;
     }
 

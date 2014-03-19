@@ -12,7 +12,7 @@
 	'htmlOptions'=>array('enctype'=>'multipart/form-data'),
 )); ?>
 
-	<p class="note">Fields with <span class="required">*</span> are required.</p>
+	<p class="note"><?php echo Yii::t('Campaign', 'Fields with <span class="required">*</span> are required.');?></p>
 
 	<?php echo $form->errorSummary($model); ?>
 
@@ -112,7 +112,7 @@ if ($model->isNewRecord) {
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'fc_impressions') . '0 means no frequency capping.<br>'; ?>
+		<?php echo $form->labelEx($model,'fc_impressions') . Yii::t('Campaign', '0 means no frequency capping.'); ?><br>
 		<?php echo $form->textField($model,'fc_impressions'); ?>
 		<?php echo $form->error($model,'fc_impressions'); ?>
 	</div>
@@ -138,20 +138,20 @@ if ($model->isNewRecord) {
 	<div class="row buttons">
 		<?php
 		if ($model->isNewRecord) {
-			echo CHtml::submitButton('Create');
+			echo CHtml::submitButton(Yii::t('Campaign', 'Create'));
 		}
 		else {
-			echo CHtml::submitButton('Save', array('confirm'=>'After you update the campaign, it will be reviewed by us before it can be put back online. Are you sure you want to update it?'));
+			echo CHtml::submitButton(Yii::t('Campaign', 'Save'), array('confirm'=>Yii::t('Campaign', 'After you update the campaign, it will be reviewed by us before it can be put back online. Are you sure you want to update it?')));
 		}
 		?>
 	</div>
 
 <?php $this->endWidget(); ?>
-        <p><b>Supported Ad Image File:</b><br>
-File Size <= 120K<br>
-Image Size: 300×250, 728×90, 160×600, 468×60, 120×600, 300×50 (mobile), and 320×50 (mobile).<br><br> 
+        <p><b><?php echo Yii::t('Campaign', 'Supported Ad Image File:'); ?></b><br>
+<?php echo Yii::t('Campaign', 'File Size'); ?> <= 120K<br>
+<?php echo Yii::t('Campaign', 'Image Size:'); ?> 300×250, 728×90, 160×600, 468×60, 120×600, 300×50 (mobile), and 320×50 (mobile).<br><br> 
 
-<b>Denied Vertical/Ad Types:</b><br>
+<b><?php echo Yii::t('Campaign', 'Denied Vertical/Ad Types:'); ?></b><br>
 	*Dating<br>
 	*Download/Toolbar<br>
 	*E-Cigs(ElectronicCigarettes)<br>

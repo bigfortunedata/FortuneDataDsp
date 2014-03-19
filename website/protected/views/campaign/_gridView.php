@@ -1,8 +1,8 @@
 <?php
 $gridColumns = array(
-	array('name'=>'name','header'=>'Name'),
+	'name',
 	array(
-        'header' => 'View',
+        'header' => Yii::t('campaign', 'Status'),
         'htmlOptions' => array('nowrap'=>'nowrap'),
         'class'=>'bootstrap.widgets.TbButtonColumn',
 		'template'=>'{online}{offline}',
@@ -29,14 +29,14 @@ $gridColumns = array(
 	        ),
 		),
 	),
-	'default_bid',
-	array('name'=>'reviewStatus.description','header'=>'Review Status'),
-	'click_url',
-	'budget_amount',
-	'start_datetime',
-	'end_datetime',
+    'default_bid',
+	array('name'=>'reviewStatus.description','header'=>Yii::t('Campaign', 'Description')),
+    'click_url',
+    'budget_amount',
+    'start_datetime',
+    'end_datetime',
 	array(
-        'header' => 'Operations',
+        'header' => Yii::t('campaign', 'Operations'),
         'htmlOptions' => array('nowrap'=>'nowrap'),
         'class'=>'bootstrap.widgets.TbButtonColumn',
         'viewButtonUrl'=>'array("view", "id"=>$data->id)',
