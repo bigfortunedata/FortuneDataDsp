@@ -30,7 +30,7 @@ $gridColumns = array(
 		),
 	),
     'default_bid',
-	array('name'=>'reviewStatus.description','header'=>Yii::t('Campaign', 'Description')),
+	array('name'=>'reviewStatus.description','header'=>Yii::t('campaign', 'Description')),
     'click_url',
     'budget_amount',
     'start_datetime',

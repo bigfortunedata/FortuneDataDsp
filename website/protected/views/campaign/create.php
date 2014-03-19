@@ -13,6 +13,6 @@ $this->menu=array(
 );
 ?>
 
-<h3><?php echo Yii::t('Campaign', 'Create Campaign'); ?></h3>
+<h3><?php echo Yii::t('campaign', 'Create Campaign'); ?></h3>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

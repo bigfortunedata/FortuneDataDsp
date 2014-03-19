@@ -8,7 +8,7 @@
 
 	<div class="row">
 		<?php
-		echo Yii::t('CampaignStats', 'Start Date:');
+		echo Yii::t('campaignStats', 'Start Date:');
 		$this->widget('zii.widgets.jui.CJuiDatePicker', array(
 		    'name'=>'FromDate',
 			'attribute'=>'FromDate',
@@ -22,7 +22,7 @@
 		            'style'=>'height:20px;width:80px;'
 		        ),
 		    ));
-		echo Yii::t('CampaignStats', 'To Date:');
+		echo Yii::t('campaignStats', 'To Date:');
 		
 		$this->widget('zii.widgets.jui.CJuiDatePicker', array(
 		    'name'=>'ToDate',
@@ -48,16 +48,16 @@ $gridColumns = array(
 	array(
 		'class'=>'bootstrap.widgets.TbRelationalColumn',
 		'name' => 'campaignName',
-		'header' => Yii::t('CampaignStats', 'Campaign Name'),
+		'header' => Yii::t('campaignStats', 'Campaign Name'),
 		'url' => $this->createUrl('/campaign/siteStats', array('id'=>'$data->id', 'fromDate'=>$filters['fromDate'], 'toDate'=>$filters['toDate'])),
 	),
-	array('name'=>'impressionsBid','header'=>Yii::t('CampaignStats', 'Impressions Bid')),
-	array('name'=>'impressionsWon','header'=>Yii::t('CampaignStats', 'Impressions Won')),
-	array('name'=>'totalEffectiveCPM','header'=>Yii::t('CampaignStats', 'effectiveCPM')),
-	array('name'=>'totalSpend','header'=>Yii::t('CampaignStats', 'Total Spend')),
-	array('name'=>'clicks','header'=>Yii::t('CampaignStats', 'Clicks')),
-	array('name'=>'clickthruRate','header'=>Yii::t('CampaignStats', 'Click Thru Rate')),
-	array('name'=>'costPerClick','header'=>Yii::t('CampaignStats', 'Cost Per Click')),
+	array('name'=>'impressionsBid','header'=>Yii::t('campaignStats', 'Impressions Bid')),
+	array('name'=>'impressionsWon','header'=>Yii::t('campaignStats', 'Impressions Won')),
+	array('name'=>'totalEffectiveCPM','header'=>Yii::t('campaignStats', 'effectiveCPM')),
+	array('name'=>'totalSpend','header'=>Yii::t('campaignStats', 'Total Spend')),
+	array('name'=>'clicks','header'=>Yii::t('campaignStats', 'Clicks')),
+	array('name'=>'clickthruRate','header'=>Yii::t('campaignStats', 'Click Thru Rate')),
+	array('name'=>'costPerClick','header'=>Yii::t('campaignStats', 'Cost Per Click')),
 	);
 
 $this->widget('bootstrap.widgets.TbExtendedGridView', array(

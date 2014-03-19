@@ -7,5 +7,5 @@ $this->breadcrumbs=array(
 );
 ?>
 
-<h4><?php echo Yii::t('CampaignStats', 'Campaign Stats');?></h4>
+<h4><?php echo Yii::t('campaignStats', 'Campaign Stats');?></h4>
 <?php echo $this->renderPartial('_stats', array('dataProvider'=>$dataProvider, 'filters'=>$filters)); ?>
