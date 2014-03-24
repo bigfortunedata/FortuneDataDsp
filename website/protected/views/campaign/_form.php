@@ -82,7 +82,7 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'click_url'); ?>
-		<?php echo $form->textField($model,'click_url',array('size'=>45,'maxlength'=>45)); ?>
+		<?php echo $form->textField($model,'click_url',array('size'=>250,'maxlength'=>250)); ?>
 		<?php echo $form->error($model,'click_url'); ?>
 	</div>
 	

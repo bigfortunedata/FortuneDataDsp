@@ -140,7 +140,7 @@ class Campaign extends FortuneDataActiveRecord {
             array('user_id, status_id, review_status_id, budget_type_id, fc_impressions, fc_period_in_hours, fc_type_id, conversion_audience, click_audience, create_user_id, update_user_id', 'numerical', 'integerOnly' => true),
             array('budget_amount', 'numerical', 'min' => 6.0),
             array('default_bid', 'numerical', 'min' => 0.3),
-            array('name, click_url', 'length', 'max' => 45),
+            array('name, click_url', 'length', 'max' => 250),
             array('budget_ede', 'length', 'max' => 10),
             array('create_time, update_time', 'safe'),
             array('name', 'unique', 'criteria' => array(
