@@ -48,7 +48,7 @@ class Utility {
         $tax_rate = 0;
 
         if (($country == 'CANADA') and ($state == 'BC')) {
-            $tax_rate = 0.5;
+            $tax_rate = 0.05;
         } elseif (($country == 'CANADA') and ($state == 'ON')) {
             $tax_rate = 0.13;
         } elseif (($country == 'CANADA') and ($state == 'PE')) {
