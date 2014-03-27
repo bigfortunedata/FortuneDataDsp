@@ -124,7 +124,8 @@ class AdminCampaignController extends Controller {
                // $this->siteScoutApi->removeSiteRule($model->id);
                // $return_status = $this->siteScoutApi->addSiteRule($model->id);
                 
-                if (isset($response->status)&&($return_status=='success')) {
+              //  if (isset($response->status)&&($return_status=='success')) {
+              if (isset($response->status)) {
                     $successMessage = "The campaign updating has been approved.";
                     //$model->save();
                 } else {
