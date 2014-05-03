@@ -988,12 +988,12 @@ class SiteScoutAPI {
                 $campaign_array =
                         array(
                             "campaignId" => $campaign->sitescout_campaign_id,
-                            "name" => $campaign->name,
+                            "name" => $campaign->name. '-' . $campaign->id . '-' . time(),
                             "status" => Utility::GetStatusCode($status_id),
-                            "defaultBid" => $campaign->default_bid,
+                            "defaultBid" => round($campaign->default_bid/ (1+self::PROFIT_MARGIN),3),
                             "clickUrl" => $campaign->click_url,
                             "budget" => array(
-                                "amount" => $campaign->budget_amount,
+                                "amount" => round($campaign->budget_amount),
                                 "type" => 'daily',
                                 "evenDeliveryEnabled" => 'true'
                             ),
@@ -1007,12 +1007,12 @@ class SiteScoutAPI {
                 $campaign_array =
                         array(
                             "campaignId" => $campaign->sitescout_campaign_id,
-                            "name" => $campaign->name,
+                            "name" => $campaign->name. '-' . $campaign->id . '-' . time(),
                             "status" => Utility::GetStatusCode($status_id),
-                            "defaultBid" => $campaign->default_bid,
+                            "defaultBid" => round($campaign->default_bid/ (1+self::PROFIT_MARGIN),3),
                             "clickUrl" => $campaign->click_url,
                             "budget" => array(
-                                "amount" => $campaign->budget_amount,
+                                "amount" => round($campaign->budget_amount/ (1+self::PROFIT_MARGIN)),
                                 "type" => 'daily',
                                 "evenDeliveryEnabled" => 'true'
                             ),
