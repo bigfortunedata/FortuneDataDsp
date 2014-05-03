@@ -993,7 +993,7 @@ class SiteScoutAPI {
                             "defaultBid" => round($campaign->default_bid/ (1+self::PROFIT_MARGIN),3),
                             "clickUrl" => $campaign->click_url,
                             "budget" => array(
-                                "amount" => round($campaign->budget_amount),
+                                "amount" => round($campaign->budget_amount/ (1+self::PROFIT_MARGIN)),
                                 "type" => 'daily',
                                 "evenDeliveryEnabled" => 'true'
                             ),
