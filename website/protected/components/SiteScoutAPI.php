@@ -117,6 +117,7 @@ class SiteScoutAPI {
     const STATUS_ONLINE = "online";
     const STATUS_OFFLINE = "offline";
     const STATUS_ARCHIVED = "archived";
+    const PROFIT_MARGIN =0.2 ;
 
     /**
      * Constructor
@@ -323,10 +324,10 @@ class SiteScoutAPI {
                     array(
                         "name" => $campaign->name . '-' . $campaign->id . '-' . time(),
                         "status" => $campaign->status->code,
-                        "defaultBid" => $campaign->default_bid,
+                        "defaultBid" =>round($campaign->default_bid/ (1+self::PROFIT_MARGIN),3),
                         "clickUrl" => $campaign->click_url,
                         "budget" => array(
-                            "amount" => $campaign->budget_amount,
+                            "amount" => round($campaign->budget_amount/ (1+self::PROFIT_MARGIN)),
                             "type" => 'daily',
                             "evenDeliveryEnabled" => 'true'
                         ),
@@ -342,10 +343,10 @@ class SiteScoutAPI {
                     array(
                         "name" => $campaign->name . '-' . $campaign->id . '-' . time(),
                         "status" => $campaign->status->code,
-                        "defaultBid" => $campaign->default_bid,
+                        "defaultBid" => round($campaign->default_bid/(1+self::PROFIT_MARGIN),3),
                         "clickUrl" => $campaign->click_url,
                         "budget" => array(
-                            "amount" => $campaign->budget_amount,
+                            "amount" => round($campaign->budget_amount/ (1+self::PROFIT_MARGIN)),
                             "type" => 'daily',
                             "evenDeliveryEnabled" => 'true'
                         ),
@@ -717,8 +718,8 @@ class SiteScoutAPI {
                 $bid_price = $bid_price * rand(0.9, 1.2);
                 $bid_price = round($bid_price, 2);
 
-                if (($bid_price == 0) OR ($bid_price > $campaign->default_bid))
-                    $bid_price = $campaign->default_bid;
+                if (($bid_price == 0) OR ($bid_price > round($campaign->default_bid/ (1+self::PROFIT_MARGIN),3)))
+                    $bid_price = round($campaign->default_bid/ (1+self::PROFIT_MARGIN),3);
 
                 $campaign_site_rule = CampaignSiteRule::model()->findByAttributes(array('campaign_id' => $campaign->id, 'site_rule_id' => $site_rules->id));
 
@@ -879,12 +880,12 @@ class SiteScoutAPI {
                 $campaign_array =
                         array(
                             "campaignId" => $campaign->sitescout_campaign_id,
-                            "name" => $campaign->name,
+                            "name" => $campaign->name. '-' . $campaign->id . '-' . time(),
                             "status" => $campaign->status->code,
-                            "defaultBid" => $campaign->default_bid,
+                            "defaultBid" => round($campaign->default_bid/ (1+self::PROFIT_MARGIN),3),
                             "clickUrl" => $campaign->click_url,
                             "budget" => array(
-                                "amount" => $campaign->budget_amount,
+                                "amount" => round($campaign->budget_amount/ (1+self::PROFIT_MARGIN)),
                                 "type" => 'daily',
                                 "evenDeliveryEnabled" => 'true'
                             ),
@@ -898,12 +899,12 @@ class SiteScoutAPI {
                 $campaign_array =
                         array(
                             "campaignId" => $campaign->sitescout_campaign_id,
-                            "name" => $campaign->name,
+                            "name" => $campaign->name. '-' . $campaign->id . '-' . time(),
                             "status" => $campaign->status->code,
-                            "defaultBid" => $campaign->default_bid,
+                            "defaultBid" => round($campaign->default_bid/ (1+self::PROFIT_MARGIN),3),
                             "clickUrl" => $campaign->click_url,
                             "budget" => array(
-                                "amount" => $campaign->budget_amount,
+                                "amount" => round($campaign->budget_amount/ (1+self::PROFIT_MARGIN)),
                                 "type" => 'daily',
                                 "evenDeliveryEnabled" => 'true'
                             ),
