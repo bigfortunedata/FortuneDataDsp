@@ -144,12 +144,13 @@ return array(
           ), */
         // uncomment the following to use a MySQL database
         'db' => array(
-            'connectionString' => 'mysql:host=pw-bigdata2013.cundn37xxxsr.us-west-2.rds.amazonaws.com;dbname=bigdata2013',
+            'connectionString' => 'mysql:host=fortunedata.cx4gvd2jduse.us-west-2.rds.amazonaws.com;dbname=bigdata2013',
             'emulatePrepare' => true,
             'username' => 'bigdata',
             'password' => 'bigdata2013',
             'charset' => 'utf8',
             'tablePrefix' => 'fd_',
+            'initSQLs'=>'SET NAMES utf8 ;',
         ),
         'errorHandler' => array(
             // use 'site/error' action to display errors
