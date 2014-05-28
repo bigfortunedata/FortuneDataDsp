@@ -150,7 +150,7 @@ return array(
             'password' => 'bigdata2013',
             'charset' => 'utf8',
             'tablePrefix' => 'fd_',
-            'initSQLs'=>'SET NAMES utf8 ;',
+          //  'initSQLs'=>'SET NAMES utf8 ;',
         ),
         'errorHandler' => array(
             // use 'site/error' action to display errors
