@@ -74,18 +74,7 @@ $this->breadcrumbs = array(
                     <?php $this->endWidget(); ?>
 
                 </div><!-- form --></td>
-            <td valign="top"><p  >
-                <h3>  East Coast Head Office<br></h3> 
-                <h5> 17 Spruce Gardens<br></h5>
-                <h5>Belleville, ON CANADA<br>
-                    <h5>K8N 5W3</h5><br><br><br><br>
-                    </p>
-                    <p>
-                    <h3>  Wast Coast Head Office<br></h3> 
-                    <h5> 4022 Providence PL<br></h5>
-                    <h5> Victoria, BC CANADA<br></h5>
-                    <h5>V8N 0A6<br></h5>
-                </p></td>
+           
         </tr>
 
     </table>
