@@ -106,7 +106,7 @@ class CronSiteScoutAPI {
      */
 
     const SITESCOUT_AUTHORIZATION_URL = "https://api.sitescout.com/oauth/token";
-    const SITESCOUT_API_URL = "https://api.sitescout.com/";
+    const SITESCOUT_API_URL = "https://api.sitescout.com/v1";
     const SITESCOUT_BASE_URL = "https://api.sitescout.com/advertisers/14551/";
     const STATUS_PENDING = "peinding";
     const STATUS_ELIGIBLE = "eligible";
