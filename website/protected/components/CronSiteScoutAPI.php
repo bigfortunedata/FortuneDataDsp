@@ -1220,6 +1220,8 @@ class CronSiteScoutAPI {
 
             $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_array, null, $headerParameters, null);
 
+               $message = (string)$response;
+                       Yii::log($message, 'error');
 
             if (isset($response->errorCode)) {
 
