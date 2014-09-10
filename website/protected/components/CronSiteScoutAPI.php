@@ -106,7 +106,7 @@ class CronSiteScoutAPI {
      */
 
     const SITESCOUT_AUTHORIZATION_URL = "https://api.sitescout.com/oauth/token";
-    const SITESCOUT_API_URL = "https://api.sitescout.com/v1";
+    const SITESCOUT_API_URL = "https://api.sitescout.com/";
     const SITESCOUT_BASE_URL = "https://api.sitescout.com/advertisers/14551/";
     const STATUS_PENDING = "peinding";
     const STATUS_ELIGIBLE = "eligible";
@@ -117,7 +117,7 @@ class CronSiteScoutAPI {
     const STATUS_ONLINE = "online";
     const STATUS_OFFLINE = "offline";
     const STATUS_ARCHIVED = "archived";
-    const PROFIT_MARGIN =0.2 ;
+    const PROFIT_MARGIN = 0.2;
 
     /**
      * Constructor
@@ -284,8 +284,8 @@ class CronSiteScoutAPI {
      */
     public function getSite() {
         $response = new stdClass;
-        
-        $i=0;
+
+        $i = 0;
 
         $headerParameters = array(
             'Authorization' => $this->access_token['token_type'] . ' ' . $this->access_token['access_token']);
@@ -298,13 +298,13 @@ class CronSiteScoutAPI {
 
             if (isset($response->siteRef)) {
                 SiteRule::model()->updateByPk($siterules->id, array('status' => 'online'));
-                $i = $i+1;
+                $i = $i + 1;
             } else {
                 SiteRule::model()->updateByPk($siterules->id, array('status' => 'offline'));
             }
-      }
-         if ($i>5)
-             return 'success';
+        }
+        if ($i > 5)
+            return 'success';
         // return $response;
     }
 
@@ -361,10 +361,10 @@ class CronSiteScoutAPI {
                     array(
                         "name" => $campaign->name . '-' . $campaign->id . '-' . time(),
                         "status" => $campaign->status->code,
-                        "defaultBid" => ROUND($campaign->default_bid / (1+self::PROFIT_MARGIN),3),
+                        "defaultBid" => ROUND($campaign->default_bid / (1 + self::PROFIT_MARGIN), 3),
                         "clickUrl" => $campaign->click_url,
                         "budget" => array(
-                            "amount" => ROUND($campaign->budget_amount / (1+self::PROFIT_MARGIN)),
+                            "amount" => ROUND($campaign->budget_amount / (1 + self::PROFIT_MARGIN)),
                             "type" => 'daily',
                             "evenDeliveryEnabled" => 'true'
                         ),
@@ -379,10 +379,10 @@ class CronSiteScoutAPI {
                     array(
                         "name" => $campaign->name . '-' . $campaign->id . '-' . time(),
                         "status" => $campaign->status->code,
-                        "defaultBid" => ROUND( $campaign->default_bid  / (1+self::PROFIT_MARGIN) ,3),
+                        "defaultBid" => ROUND($campaign->default_bid / (1 + self::PROFIT_MARGIN), 3),
                         "clickUrl" => $campaign->click_url,
                         "budget" => array(
-                            "amount" => ROUND($campaign->budget_amount / (1+self::PROFIT_MARGIN)),
+                            "amount" => ROUND($campaign->budget_amount / (1 + self::PROFIT_MARGIN)),
                             "type" => 'daily',
                             "evenDeliveryEnabled" => 'true'
                         ),
@@ -673,9 +673,9 @@ class CronSiteScoutAPI {
                 $campaign_site_rule->campaign_id = $campaign->id;
                 $campaign_site_rule->site_rule_id = $site_rules->id;
                 // $campaign_site_rule->status = 'online';
-                $campaign_site_rule->bid = min(ROUND($campaign->default_bid/ (1+self::PROFIT_MARGIN),3), $site_rules->sitescout_ave_cpm);
+                $campaign_site_rule->bid = min(ROUND($campaign->default_bid / (1 + self::PROFIT_MARGIN), 3), $site_rules->sitescout_ave_cpm);
                 if ($campaign_site_rule->bid == 0)
-                    $campaign_site_rule->bid = ROUND($campaign->default_bid/ (1+self::PROFIT_MARGIN),3);
+                    $campaign_site_rule->bid = ROUND($campaign->default_bid / (1 + self::PROFIT_MARGIN), 3);
 
                 $campaign_site_rule_array =
                         array(
@@ -740,10 +740,10 @@ class CronSiteScoutAPI {
                             "campaignId" => $campaign->sitescout_campaign_id,
                             "name" => $campaign->name,
                             "status" => $campaign->status->code,
-                            "defaultBid" => ROUND($campaign->default_bid / (1+self::PROFIT_MARGIN),3),
+                            "defaultBid" => ROUND($campaign->default_bid / (1 + self::PROFIT_MARGIN), 3),
                             "clickUrl" => $campaign->click_url,
                             "budget" => array(
-                                "amount" => ROUND($campaign->budget_amount / (1+self::PROFIT_MARGIN) ),
+                                "amount" => ROUND($campaign->budget_amount / (1 + self::PROFIT_MARGIN)),
                                 "type" => 'daily',
                                 "evenDeliveryEnabled" => 'true'
                             ),
@@ -758,10 +758,10 @@ class CronSiteScoutAPI {
                             "campaignId" => $campaign->sitescout_campaign_id,
                             "name" => $campaign->name,
                             "status" => $campaign->status->code,
-                            "defaultBid" => ROUND( $campaign->default_bid  / (1+self::PROFIT_MARGIN), 3),
+                            "defaultBid" => ROUND($campaign->default_bid / (1 + self::PROFIT_MARGIN), 3),
                             "clickUrl" => $campaign->click_url,
                             "budget" => array(
-                                "amount" => ROUND($campaign->budget_amount / (1+self::PROFIT_MARGIN)),
+                                "amount" => ROUND($campaign->budget_amount / (1 + self::PROFIT_MARGIN)),
                                 "type" => 'daily',
                                 "evenDeliveryEnabled" => 'true'
                             ),
@@ -1215,13 +1215,21 @@ class CronSiteScoutAPI {
             //get the all the campain stats as of today
             $stats_array =
                     array(
-                        "dateFrom" => '20131001',
+                        "dateFrom" => '20141208',
             );
 
+             $message = $path;
+                Yii::log($message, 'error');
+            
             $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_array, null, $headerParameters, null);
 
-               $message = $response->entity->status;
-                       Yii::log($message, 'error');
+            if (isset($response->errorCode)) {
+                $message = '[BATCH TYPE:]' . $batch_type . '-[DATE FROM:]' . $dateFrom . '-[CAMPAIGN ID:]' . $campaigns->id . '-[SITESCOUT CAMPAIGN ID:]' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
+                Yii::log($message, 'error');
+            } else {
+                $message = $response->entity->status;
+                Yii::log($message, 'error');
+            }
 
             if (isset($response->errorCode)) {
 
@@ -1239,15 +1247,14 @@ class CronSiteScoutAPI {
                             'campaign_id' => $campaigns->id,
                             'sitescout_campaign_id' => $campaigns->sitescout_campaign_id,
                             'status_id' => Utility::GetStatusId($response->entity->status),
-                                   'defaultBid' =>   8,
-                           // 'defaultBid' => $response->entity->defaultBid,
+                            'defaultBid' => $response->entity->defaultBid,
                             'impressionsBid' => $response->stats->impressionsBid,
-                            'impressionsWon' => $response->stats->impressionsWon  ,
-                            'effectiveCPM' => $response->stats->effectiveCPM *(1+self::PROFIT_MARGIN),
-                            'auctionsSpend' => $response->stats->auctionsSpend *(1+self::PROFIT_MARGIN),
+                            'impressionsWon' => $response->stats->impressionsWon,
+                            'effectiveCPM' => $response->stats->effectiveCPM * (1 + self::PROFIT_MARGIN),
+                            'auctionsSpend' => $response->stats->auctionsSpend * (1 + self::PROFIT_MARGIN),
                             'clicks' => $response->stats->clicks,
                             'clickthruRate' => $response->stats->clickthruRate,
-                            'costPerClick' => $response->stats->costPerClick *(1+self::PROFIT_MARGIN),
+                            'costPerClick' => $response->stats->costPerClick * (1 + self::PROFIT_MARGIN),
                             'offerClicks' => $response->stats->offerClicks,
                             'offerClickthruRate' => $response->stats->offerClickthruRate,
                             'conversions' => $response->stats->conversions,
@@ -1257,9 +1264,9 @@ class CronSiteScoutAPI {
                             'costPerAcquisition' => $response->stats->costPerAcquisition,
                             'revenuePerMille' => $response->stats->revenuePerMille,
                             'revenue' => $response->stats->revenue,
-                            'totalEffectiveCPM' => $response->stats->totalEffectiveCPM*(1+self::PROFIT_MARGIN),
-                            'totalSpend' => $response->stats->totalSpend*(1+self::PROFIT_MARGIN),
-                            'dataEffectiveCPM' => $response->stats->dataEffectiveCPM ,
+                            'totalEffectiveCPM' => $response->stats->totalEffectiveCPM * (1 + self::PROFIT_MARGIN),
+                            'totalSpend' => $response->stats->totalSpend * (1 + self::PROFIT_MARGIN),
+                            'dataEffectiveCPM' => $response->stats->dataEffectiveCPM,
                             'dataSpend' => $response->stats->dataSpend,
                             'update_time' => date('Y-m-d H:i:s'),
                             'batch_type' => 'HOURLY'
@@ -1269,15 +1276,14 @@ class CronSiteScoutAPI {
                         $campaignStatsSummary->campaign_id = $campaigns->id;
                         $campaignStatsSummary->sitescout_campaign_id = $campaigns->sitescout_campaign_id;
                         $campaignStatsSummary->status_id = Utility::GetStatusId($response->entity->status);
-                       $campaignStatsSummary->defaultBid = 8;
-                        // $campaignStatsSummary->defaultBid = $response->entity->defaultBid;
+                        $campaignStatsSummary->defaultBid = $response->entity->defaultBid;
                         $campaignStatsSummary->impressionsBid = $response->stats->impressionsBid;
                         $campaignStatsSummary->impressionsWon = $response->stats->impressionsWon;
-                        $campaignStatsSummary->effectiveCPM = $response->stats->effectiveCPM*(1+self::PROFIT_MARGIN);
-                        $campaignStatsSummary->auctionsSpend = $response->stats->auctionsSpend*(1+self::PROFIT_MARGIN);
+                        $campaignStatsSummary->effectiveCPM = $response->stats->effectiveCPM * (1 + self::PROFIT_MARGIN);
+                        $campaignStatsSummary->auctionsSpend = $response->stats->auctionsSpend * (1 + self::PROFIT_MARGIN);
                         $campaignStatsSummary->clicks = $response->stats->clicks;
                         $campaignStatsSummary->clickthruRate = $response->stats->clickthruRate;
-                        $campaignStatsSummary->costPerClick = $response->stats->costPerClick*(1+self::PROFIT_MARGIN);
+                        $campaignStatsSummary->costPerClick = $response->stats->costPerClick * (1 + self::PROFIT_MARGIN);
                         $campaignStatsSummary->offerClicks = $response->stats->offerClicks;
                         $campaignStatsSummary->offerClickthruRate = $response->stats->offerClickthruRate;
                         $campaignStatsSummary->conversions = $response->stats->conversions;
@@ -1287,9 +1293,9 @@ class CronSiteScoutAPI {
                         $campaignStatsSummary->costPerAcquisition = $response->stats->costPerAcquisition;
                         $campaignStatsSummary->revenuePerMille = $response->stats->revenuePerMille;
                         $campaignStatsSummary->revenue = $response->stats->revenue;
-                        $campaignStatsSummary->totalEffectiveCPM = $response->stats->totalEffectiveCPM*(1+self::PROFIT_MARGIN);
-                        $campaignStatsSummary->totalSpend = $response->stats->totalSpend*(1+self::PROFIT_MARGIN);
-                        $campaignStatsSummary->dataEffectiveCPM = $response->stats->dataEffectiveCPM ;
+                        $campaignStatsSummary->totalEffectiveCPM = $response->stats->totalEffectiveCPM * (1 + self::PROFIT_MARGIN);
+                        $campaignStatsSummary->totalSpend = $response->stats->totalSpend * (1 + self::PROFIT_MARGIN);
+                        $campaignStatsSummary->dataEffectiveCPM = $response->stats->dataEffectiveCPM;
                         $campaignStatsSummary->dataSpend = $response->stats->dataSpend;
                         $campaignStatsSummary->update_time = date('Y-m-d H:i:s');
                         $campaignStatsSummary->batch_type = 'HOURLY';
@@ -1322,15 +1328,14 @@ class CronSiteScoutAPI {
                                 'sitescout_campaign_id' => $campaigns->sitescout_campaign_id,
                                 'status_id' => Utility::GetStatusId($response->entity->status),
                                 'campaign_date' => $dateFrom,
-                                         'defaultBid' => 8,
-                              //  'defaultBid' => $response->entity->defaultBid,
+                                'defaultBid' => $response->entity->defaultBid,
                                 'impressionsBid' => $response->stats->impressionsBid,
                                 'impressionsWon' => $response->stats->impressionsWon,
-                                'effectiveCPM' => $response->stats->effectiveCPM*(1+self::PROFIT_MARGIN),
-                                'auctionsSpend' => $response->stats->auctionsSpend*(1+self::PROFIT_MARGIN),
+                                'effectiveCPM' => $response->stats->effectiveCPM * (1 + self::PROFIT_MARGIN),
+                                'auctionsSpend' => $response->stats->auctionsSpend * (1 + self::PROFIT_MARGIN),
                                 'clicks' => $response->stats->clicks,
                                 'clickthruRate' => $response->stats->clickthruRate,
-                                'costPerClick' => $response->stats->costPerClick*(1+self::PROFIT_MARGIN),
+                                'costPerClick' => $response->stats->costPerClick * (1 + self::PROFIT_MARGIN),
                                 'offerClicks' => $response->stats->offerClicks,
                                 'offerClickthruRate' => $response->stats->offerClickthruRate,
                                 'conversions' => $response->stats->conversions,
@@ -1340,8 +1345,8 @@ class CronSiteScoutAPI {
                                 'costPerAcquisition' => $response->stats->costPerAcquisition,
                                 'revenuePerMille' => $response->stats->revenuePerMille,
                                 'revenue' => $response->stats->revenue,
-                                'totalEffectiveCPM' => $response->stats->totalEffectiveCPM*(1+self::PROFIT_MARGIN),
-                                'totalSpend' => $response->stats->totalSpend*(1+self::PROFIT_MARGIN),
+                                'totalEffectiveCPM' => $response->stats->totalEffectiveCPM * (1 + self::PROFIT_MARGIN),
+                                'totalSpend' => $response->stats->totalSpend * (1 + self::PROFIT_MARGIN),
                                 'dataEffectiveCPM' => $response->stats->dataEffectiveCPM,
                                 'dataSpend' => $response->stats->dataSpend,
                                 'update_time' => date('Y-m-d H:i:s'),
@@ -1354,15 +1359,14 @@ class CronSiteScoutAPI {
                             $campaignStatsDaily->sitescout_campaign_id = $campaigns->sitescout_campaign_id;
                             $campaignStatsDaily->status_id = Utility::GetStatusId($response->entity->status);
                             $campaignStatsDaily->campaign_date = $dateFrom;
-                             $campaignStatsDaily->defaultBid = 8;
-                          //  $campaignStatsDaily->defaultBid = $response->entity->defaultBid;
+                            $campaignStatsDaily->defaultBid = $response->entity->defaultBid;
                             $campaignStatsDaily->impressionsBid = $response->stats->impressionsBid;
                             $campaignStatsDaily->impressionsWon = $response->stats->impressionsWon;
-                            $campaignStatsDaily->effectiveCPM = $response->stats->effectiveCPM*(1+self::PROFIT_MARGIN);
-                            $campaignStatsDaily->auctionsSpend = $response->stats->auctionsSpend*(1+self::PROFIT_MARGIN);
+                            $campaignStatsDaily->effectiveCPM = $response->stats->effectiveCPM * (1 + self::PROFIT_MARGIN);
+                            $campaignStatsDaily->auctionsSpend = $response->stats->auctionsSpend * (1 + self::PROFIT_MARGIN);
                             $campaignStatsDaily->clicks = $response->stats->clicks;
                             $campaignStatsDaily->clickthruRate = $response->stats->clickthruRate;
-                            $campaignStatsDaily->costPerClick = $response->stats->costPerClick*(1+self::PROFIT_MARGIN);
+                            $campaignStatsDaily->costPerClick = $response->stats->costPerClick * (1 + self::PROFIT_MARGIN);
                             $campaignStatsDaily->offerClicks = $response->stats->offerClicks;
                             $campaignStatsDaily->offerClickthruRate = $response->stats->offerClickthruRate;
                             $campaignStatsDaily->conversions = $response->stats->conversions;
@@ -1372,8 +1376,8 @@ class CronSiteScoutAPI {
                             $campaignStatsDaily->costPerAcquisition = $response->stats->costPerAcquisition;
                             $campaignStatsDaily->revenuePerMille = $response->stats->revenuePerMille;
                             $campaignStatsDaily->revenue = $response->stats->revenue;
-                            $campaignStatsDaily->totalEffectiveCPM = $response->stats->totalEffectiveCPM*(1+self::PROFIT_MARGIN);
-                            $campaignStatsDaily->totalSpend = $response->stats->totalSpend*(1+self::PROFIT_MARGIN);
+                            $campaignStatsDaily->totalEffectiveCPM = $response->stats->totalEffectiveCPM * (1 + self::PROFIT_MARGIN);
+                            $campaignStatsDaily->totalSpend = $response->stats->totalSpend * (1 + self::PROFIT_MARGIN);
                             $campaignStatsDaily->dataEffectiveCPM = $response->stats->dataEffectiveCPM;
                             $campaignStatsDaily->dataSpend = $response->stats->dataSpend;
                             $campaignStatsDaily->create_time = date('Y-m-d H:i:s');
@@ -1419,15 +1423,14 @@ class CronSiteScoutAPI {
                                             'siteRef' => $results->entity->siteRef,
                                             'domain' => $results->entity->domain,
                                             'campaign_stats_daily_id' => $campaignStatsDaily->id,
-                                                    'defaultBid' => 8,
-                                            //'defaultBid' => $results->entity->bid,
+                                            'defaultBid' => $results->entity->bid,
                                             'impressionsBid' => $results->stats->impressionsBid,
                                             'impressionsWon' => $results->stats->impressionsWon,
-                                            'effectiveCPM' => $results->stats->effectiveCPM*(1+self::PROFIT_MARGIN),
-                                            'auctionsSpend' => $results->stats->auctionsSpend*(1+self::PROFIT_MARGIN),
+                                            'effectiveCPM' => $results->stats->effectiveCPM * (1 + self::PROFIT_MARGIN),
+                                            'auctionsSpend' => $results->stats->auctionsSpend * (1 + self::PROFIT_MARGIN),
                                             'clicks' => $results->stats->clicks,
                                             'clickthruRate' => $results->stats->clickthruRate,
-                                            'costPerClick' => $results->stats->costPerClick*(1+self::PROFIT_MARGIN),
+                                            'costPerClick' => $results->stats->costPerClick * (1 + self::PROFIT_MARGIN),
                                             'offerClicks' => $results->stats->offerClicks,
                                             'offerClickthruRate' => $results->stats->offerClickthruRate,
                                             'conversions' => $results->stats->conversions,
@@ -1437,8 +1440,8 @@ class CronSiteScoutAPI {
                                             'costPerAcquisition' => $results->stats->costPerAcquisition,
                                             'revenuePerMille' => $results->stats->revenuePerMille,
                                             'revenue' => $results->stats->revenue,
-                                            'totalEffectiveCPM' => $results->stats->totalEffectiveCPM*(1+self::PROFIT_MARGIN),
-                                            'totalSpend' => $results->stats->totalSpend*(1+self::PROFIT_MARGIN),
+                                            'totalEffectiveCPM' => $results->stats->totalEffectiveCPM * (1 + self::PROFIT_MARGIN),
+                                            'totalSpend' => $results->stats->totalSpend * (1 + self::PROFIT_MARGIN),
                                             'dataEffectiveCPM' => $results->stats->dataEffectiveCPM,
                                             'dataSpend' => $results->stats->dataSpend,
                                             'update_time' => date('Y-m-d H:i:s'),
@@ -1456,15 +1459,14 @@ class CronSiteScoutAPI {
                                         $campaignSiteStatsDaily->ruleId = $results->entity->ruleId;
                                         $campaignSiteStatsDaily->siteRef = $results->entity->siteRef;
                                         $campaignSiteStatsDaily->domain = $results->entity->domain;
-                                        $campaignSiteStatsDaily->defaultBid = 8;
-                                        //$campaignSiteStatsDaily->defaultBid = $results->entity->bid;
+                                        $campaignSiteStatsDaily->defaultBid = $results->entity->bid;
                                         $campaignSiteStatsDaily->impressionsBid = $results->stats->impressionsBid;
                                         $campaignSiteStatsDaily->impressionsWon = $results->stats->impressionsWon;
-                                        $campaignSiteStatsDaily->effectiveCPM = $results->stats->effectiveCPM*(1+self::PROFIT_MARGIN);
-                                        $campaignSiteStatsDaily->auctionsSpend = $results->stats->auctionsSpend*(1+self::PROFIT_MARGIN);
+                                        $campaignSiteStatsDaily->effectiveCPM = $results->stats->effectiveCPM * (1 + self::PROFIT_MARGIN);
+                                        $campaignSiteStatsDaily->auctionsSpend = $results->stats->auctionsSpend * (1 + self::PROFIT_MARGIN);
                                         $campaignSiteStatsDaily->clicks = $results->stats->clicks;
                                         $campaignSiteStatsDaily->clickthruRate = $results->stats->clickthruRate;
-                                        $campaignSiteStatsDaily->costPerClick = $results->stats->costPerClick*(1+self::PROFIT_MARGIN);
+                                        $campaignSiteStatsDaily->costPerClick = $results->stats->costPerClick * (1 + self::PROFIT_MARGIN);
                                         $campaignSiteStatsDaily->offerClicks = $results->stats->offerClicks;
                                         $campaignSiteStatsDaily->offerClickthruRate = $results->stats->offerClickthruRate;
                                         $campaignSiteStatsDaily->conversions = $results->stats->conversions;
@@ -1474,8 +1476,8 @@ class CronSiteScoutAPI {
                                         $campaignSiteStatsDaily->costPerAcquisition = $results->stats->costPerAcquisition;
                                         $campaignSiteStatsDaily->revenuePerMille = $results->stats->revenuePerMille;
                                         $campaignSiteStatsDaily->revenue = $results->stats->revenue;
-                                        $campaignSiteStatsDaily->totalEffectiveCPM = $results->stats->totalEffectiveCPM*(1+self::PROFIT_MARGIN);
-                                        $campaignSiteStatsDaily->totalSpend = $results->stats->totalSpend*(1+self::PROFIT_MARGIN);
+                                        $campaignSiteStatsDaily->totalEffectiveCPM = $results->stats->totalEffectiveCPM * (1 + self::PROFIT_MARGIN);
+                                        $campaignSiteStatsDaily->totalSpend = $results->stats->totalSpend * (1 + self::PROFIT_MARGIN);
                                         $campaignSiteStatsDaily->dataEffectiveCPM = $results->stats->dataEffectiveCPM;
                                         $campaignSiteStatsDaily->dataSpend = $results->stats->dataSpend;
                                         $campaignSiteStatsDaily->create_time = date('Y-m-d H:i:s');
