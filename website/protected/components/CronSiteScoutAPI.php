@@ -1215,7 +1215,7 @@ class CronSiteScoutAPI {
             //get the all the campain stats as of today
             $stats_array =
                     array(
-                        "dateFrom" => '20141208',
+                        "dateFrom" => '20141206',
             );
 
              $message = $path;
