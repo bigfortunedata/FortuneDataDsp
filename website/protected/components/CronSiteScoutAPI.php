@@ -1237,7 +1237,7 @@ class CronSiteScoutAPI {
                             'campaign_id' => $campaigns->id,
                             'sitescout_campaign_id' => $campaigns->sitescout_campaign_id,
                             'status_id' => Utility::GetStatusId($response->entity->status),
-                            'defaultBid' => $response->entity->defaultBid,
+                           // 'defaultBid' => $response->entity->defaultBid,
                             'impressionsBid' => $response->stats->impressionsBid,
                             'impressionsWon' => $response->stats->impressionsWon  ,
                             'effectiveCPM' => $response->stats->effectiveCPM *(1+self::PROFIT_MARGIN),
@@ -1266,7 +1266,7 @@ class CronSiteScoutAPI {
                         $campaignStatsSummary->campaign_id = $campaigns->id;
                         $campaignStatsSummary->sitescout_campaign_id = $campaigns->sitescout_campaign_id;
                         $campaignStatsSummary->status_id = Utility::GetStatusId($response->entity->status);
-                        $campaignStatsSummary->defaultBid = $response->entity->defaultBid;
+                       // $campaignStatsSummary->defaultBid = $response->entity->defaultBid;
                         $campaignStatsSummary->impressionsBid = $response->stats->impressionsBid;
                         $campaignStatsSummary->impressionsWon = $response->stats->impressionsWon;
                         $campaignStatsSummary->effectiveCPM = $response->stats->effectiveCPM*(1+self::PROFIT_MARGIN);
@@ -1318,7 +1318,7 @@ class CronSiteScoutAPI {
                                 'sitescout_campaign_id' => $campaigns->sitescout_campaign_id,
                                 'status_id' => Utility::GetStatusId($response->entity->status),
                                 'campaign_date' => $dateFrom,
-                                'defaultBid' => $response->entity->defaultBid,
+                              //  'defaultBid' => $response->entity->defaultBid,
                                 'impressionsBid' => $response->stats->impressionsBid,
                                 'impressionsWon' => $response->stats->impressionsWon,
                                 'effectiveCPM' => $response->stats->effectiveCPM*(1+self::PROFIT_MARGIN),
@@ -1349,7 +1349,7 @@ class CronSiteScoutAPI {
                             $campaignStatsDaily->sitescout_campaign_id = $campaigns->sitescout_campaign_id;
                             $campaignStatsDaily->status_id = Utility::GetStatusId($response->entity->status);
                             $campaignStatsDaily->campaign_date = $dateFrom;
-                            $campaignStatsDaily->defaultBid = $response->entity->defaultBid;
+                          //  $campaignStatsDaily->defaultBid = $response->entity->defaultBid;
                             $campaignStatsDaily->impressionsBid = $response->stats->impressionsBid;
                             $campaignStatsDaily->impressionsWon = $response->stats->impressionsWon;
                             $campaignStatsDaily->effectiveCPM = $response->stats->effectiveCPM*(1+self::PROFIT_MARGIN);
