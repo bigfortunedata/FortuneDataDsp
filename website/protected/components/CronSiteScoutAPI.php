@@ -1218,18 +1218,7 @@ class CronSiteScoutAPI {
                         "dateFrom" => '20140908',
             );
 
-             $message = $path;
-                Yii::log($message, 'error');
-            
             $response = $this->SiteScoutApiCall($path, EHttpClient::GET, $stats_array, null, $headerParameters, null);
-
-            if (isset($response->errorCode)) {
-                $message = '[BATCH TYPE:]' . $batch_type . '-[DATE FROM:]' . $dateFrom . '-[CAMPAIGN ID:]' . $campaigns->id . '-[SITESCOUT CAMPAIGN ID:]' . $campaigns->sitescout_campaign_id . ' retrieveStatCampSite get campaign stats failed, error message : ' . $response->errorCode . '  -  ' . $response->message;
-                Yii::log($message, 'error');
-            } else {
-                $message = $response->entity->status;
-                Yii::log($message, 'error');
-            }
 
             if (isset($response->errorCode)) {
 
